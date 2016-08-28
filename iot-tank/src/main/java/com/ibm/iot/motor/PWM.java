@@ -41,7 +41,7 @@ public class PWM {
 	// which is 0x39.
 	private I2CDevice device = null;
 
-	private boolean debug = false;
+	private boolean debug = true;
 
 	public PWM() throws MotorException {
 		this(0x60, 1600, false);
@@ -54,6 +54,8 @@ public class PWM {
 		try {
 			i2c = I2CFactory.getInstance(getBusNumber());
 			device = i2c.getDevice(address);
+			
+			System.out.println("Active Device : " + device);
 		} catch (UnsupportedBusNumberException | IOException e) {
 			throw new MotorException("Exception creating I2C device", e);
 		}
@@ -141,6 +143,8 @@ public class PWM {
 	}
 
 	private static int getBusNumber() throws MotorException {
-		return getRevision() - 1;
+		int busNumber = getRevision() - 1;
+		System.out.println("Bus Number : " + busNumber);
+		return busNumber;
 	}
 }

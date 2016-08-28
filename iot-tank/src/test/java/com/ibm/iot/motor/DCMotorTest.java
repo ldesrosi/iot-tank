@@ -6,7 +6,7 @@ public class DCMotorTest extends TestCase {
 
 	public void testMotor1() {
 		try {
-			DCMotor motor = new DCMotor(0x60, 1600, 1);
+			DCMotor motor = new DCMotor(0x60, 1600, 0);
 			
 			motor.run(MotorCommandEnum.FORWARD);
 			Thread.sleep(2000);
