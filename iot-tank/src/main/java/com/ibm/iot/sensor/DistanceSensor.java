@@ -28,11 +28,8 @@ public class DistanceSensor implements Runnable {
     public DistanceSensor() {
         gpio = GpioFactory.getInstance();
 
-        pinEcho = gpio.provisionDigitalInputPin(RaspiPin.GPIO_24);
-        pinEcho.setShutdownOptions(true);
-
-        pinTrigger = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_23);
-        pinTrigger.setShutdownOptions(true);    
+        pinTrigger = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_14);
+        pinEcho = gpio.provisionDigitalInputPin(RaspiPin.GPIO_10); 
         
         pinTrigger.low();
     }
@@ -58,6 +55,7 @@ public class DistanceSensor implements Runnable {
 			}
 		} catch (TimeoutException e) {
 			System.out.println("Timeout measuring distance.");
+			e.printStackTrace();
 		}
 	}
 	
