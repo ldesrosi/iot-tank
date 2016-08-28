@@ -28,8 +28,11 @@ public class DistanceSensor implements Runnable {
 
 	private double distance = 0;
 
-	public DistanceSensor() {
+	static {
 		com.pi4j.wiringpi.Gpio.wiringPiSetup();
+	}
+	public DistanceSensor() {
+
 
 		gpio = GpioFactory.getInstance();
 
