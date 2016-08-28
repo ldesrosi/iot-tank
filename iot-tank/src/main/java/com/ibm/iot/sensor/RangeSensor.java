@@ -18,19 +18,22 @@ public class RangeSensor implements Runnable {
 	private long endTime = 0;
 
 	static {
-		if (Gpio.wiringPiSetup() == -1) {
+		if (Gpio.wiringPiSetupGpio() == -1) {
             System.out.println(" ==>> GPIO SETUP FAILED");
 		}
 	}
 	
 	public RangeSensor() {
-		GpioUtil.export(TRIGGER_PIN, GpioUtil.DIRECTION_OUT);
+		//GpioUtil.export(TRIGGER_PIN, GpioUtil.DIRECTION_OUT);
 		Gpio.pinMode(TRIGGER_PIN, Gpio.OUTPUT);
 
-		GpioUtil.export(ECHO_PIN, GpioUtil.DIRECTION_IN);
-		GpioUtil.setEdgeDetection(ECHO_PIN, GpioUtil.EDGE_BOTH);
+		//GpioUtil.export(ECHO_PIN, GpioUtil.DIRECTION_IN);
+		//GpioUtil.setEdgeDetection(ECHO_PIN, GpioUtil.EDGE_BOTH);
 		Gpio.pinMode(ECHO_PIN, Gpio.INPUT);
-		Gpio.pullUpDnControl(ECHO_PIN, Gpio.PUD_DOWN);
+		//Gpio.pullUpDnControl(ECHO_PIN, Gpio.PUD_DOWN);
+		
+		Gpio.digitalWrite(TRIGGER_PIN, 0);
+		Gpio.delay(2000);
 	}
 
 	@Override
@@ -38,9 +41,20 @@ public class RangeSensor implements Runnable {
 		while (active) {
 			System.out.println("Range Sensor Triggered");
 
-			triggerSensor();
-			waitForSignal();
-			long duration = measureSignal();
+			Gpio.digitalWrite(TRIGGER_PIN, 1);
+			Gpio.delayMicroseconds(TRIG_DURATION_IN_MICROS);
+			Gpio.digitalWrite(TRIGGER_PIN, 0);
+			
+			while (Gpio.digitalRead(ECHO_PIN) == 0) {
+				startTime = System.nanoTime();
+			}
+			
+			while (Gpio.digitalRead(ECHO_PIN) == 1) {
+				endTime = System.nanoTime();
+			}
+			System.out.println("Start time = " + startTime);
+			System.out.println("EndTime = " + endTime);
+			long duration = (long) Math.ceil((endTime - startTime) / 1000.0); 
 
 			distance = duration * SOUND_SPEED / (2 * 10000);
 			
@@ -53,32 +67,6 @@ public class RangeSensor implements Runnable {
 				System.err.println("Interrupt during trigger");
 			}
 		}
-	}
-
-	/**
-	 * Put a high on the trig pin for TRIG_DURATION_IN_MICROS
-	 */
-	private void triggerSensor() {
-		Gpio.digitalWrite(TRIGGER_PIN, 1);
-		Gpio.delayMicroseconds(TRIG_DURATION_IN_MICROS);
-		Gpio.digitalWrite(TRIGGER_PIN, 0);
-
-	}
-
-	private void waitForSignal() {
-		while (Gpio.digitalRead(ECHO_PIN) == 0) {
-			startTime = System.nanoTime();
-		}
-	}
-
-	private long measureSignal() {
-		while (Gpio.digitalRead(ECHO_PIN) == 1) {
-			endTime = System.nanoTime();
-		}
-		System.out.println("Start time = " + startTime);
-		System.out.println("EndTime = " + endTime);
-		return (long) Math.ceil((endTime - startTime) / 1000.0); // Return micro
-																	// seconds
 	}
 
 	public double getDistance() {
