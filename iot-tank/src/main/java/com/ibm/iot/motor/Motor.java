@@ -19,7 +19,8 @@ public class Motor {
 
 		if (value == 0) {
 			pwm.setPWM(pin, 0, 4096);
-		} else {
+		} 
+		if (value == 1) {
 			pwm.setPWM(pin, 4096, 0);
 		}
 	}

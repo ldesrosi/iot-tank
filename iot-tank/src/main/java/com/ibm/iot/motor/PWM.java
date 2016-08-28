@@ -96,7 +96,7 @@ public class PWM {
 
 			device.write(__MODE1, (byte) newmode);
 			device.write(__PRESCALE,
-					(byte) new Integer((int) Math.floor(prescale)).intValue());
+					(byte) Math.floor(prescale));
 			device.write(__MODE1, (byte) oldmode);
 			Thread.sleep(5);
 			device.write(__MODE1, (byte) (oldmode | 0x80));

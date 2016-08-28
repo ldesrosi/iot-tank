@@ -32,7 +32,7 @@ public class DCMotorTest extends TestCase {
 		}
 
 		System.out.println("Backward! ");
-		myMotor.run(MotorCommandEnum.FORWARD);
+		myMotor.run(MotorCommandEnum.BACKWARD);
 
 		System.out.println("\tSpeed up...");
 		for (int i = 0; i < 255; i++) {
