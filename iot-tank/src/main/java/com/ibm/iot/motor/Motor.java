@@ -4,7 +4,7 @@ public class Motor {
 	private PWM pwm = null;
 
 	protected Motor(int address, int frequency) throws MotorException {
-		pwm = new PWM(address, frequency, false);
+		pwm = new PWM(address, frequency);
 	}
 
 	protected void setPin(int pin, int value) throws MotorException {

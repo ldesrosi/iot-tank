@@ -20,10 +20,10 @@ public class PWM {
 	private int __LED0_ON_H = 0x07;
 	private int __LED0_OFF_L = 0x08;
 	private int __LED0_OFF_H = 0x09;
-//	private int __ALL_LED_ON_L = 0xFA;
-//	private int __ALL_LED_ON_H = 0xFB;
-//	private int __ALL_LED_OFF_L = 0xFC;
-//	private int __ALL_LED_OFF_H = 0xFD;
+	private int __ALL_LED_ON_L = 0xFA;
+	private int __ALL_LED_ON_H = 0xFB;
+	private int __ALL_LED_OFF_L = 0xFC;
+	private int __ALL_LED_OFF_H = 0xFD;
 
 	// Bits
 //	private byte __RESTART = (byte) 0x80;
@@ -44,13 +44,13 @@ public class PWM {
 	private boolean debug = true;
 
 	public PWM() throws MotorException {
-		this(0x60, 1600, false);
+		this(0x60, 1600);
 
 	}
 
-	public PWM(int address, float frequency, boolean debug)
+	public PWM(int address, float frequency)
 			throws MotorException {
-		this.debug = debug;
+
 		try {
 			i2c = I2CFactory.getInstance(getBusNumber());
 			device = i2c.getDevice(address);
@@ -120,10 +120,10 @@ public class PWM {
 
 	public void setAllPWM(int on, int off) throws MotorException {
 		try {
-			device.write(__LED0_ON_L, (byte) (on & 0xFF));
-			device.write(__LED0_ON_H, (byte) (on >> 8));
-			device.write(__LED0_OFF_L, (byte) (off & 0xFF));
-			device.write(__LED0_OFF_H, (byte) (off >> 8));
+			device.write(__ALL_LED_ON_L, (byte) (on & 0xFF));
+			device.write(__ALL_LED_ON_H, (byte) (on >> 8));
+			device.write(__ALL_LED_OFF_L, (byte) (off & 0xFF));
+			device.write(__ALL_LED_OFF_H, (byte) (off >> 8));
 		} catch (IOException e) {
 			throw new MotorException("Exception setting all channel ", e);
 		}
