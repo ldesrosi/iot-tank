@@ -9,4 +9,5 @@ cd $SCRIPTPATH/..
 git pull git@github.com:ldesrosi/iot-tank.git
 
 cd iot-tank
-mvn exec:java -Dexec.mainClass="com.ibm.iot.tank.App" -Dexec.classpathScope=runtime 
+mvn package
+sudo env "PATH=$PATH" mvn exec:java -Dexec.mainClass="com.ibm.iot.tank.App" -Dexec.classpathScope=runtime 
