@@ -10,12 +10,18 @@ public class RangeSensorTest extends TestCase {
 		thread.start();
 		
 		try {
-			Thread.sleep(5000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
 		sensor.deactivate();
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		System.out.println("Final Distance: " + sensor.getDistance());
 		
