@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 public class DistanceSensorTest extends TestCase {
 	public void testDistance() {
-		DistanceSensor sensor = new DistanceSensor();
+		RangeSensor sensor = new RangeSensor();
 		Thread thread = new Thread(sensor);
 		
 		thread.start();
@@ -19,8 +19,5 @@ public class DistanceSensorTest extends TestCase {
 		sensor.deactivate();
 		
 		System.out.println("Final Distance: " + sensor.getDistance());
-		
-		
-		
 	}
 }
