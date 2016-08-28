@@ -1,71 +1,116 @@
 package com.ibm.iot.sensor;
 
+import java.util.concurrent.TimeoutException;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.RaspiPin;
 
 public class DistanceSensor implements Runnable {
+    
+    private final static float SOUND_SPEED = 340.29f;  // speed of sound in m/s
+    
+    private final static int TRIG_DURATION_IN_MICROS = 10; // trigger duration of 10 micro s
+    private final static int WAIT_DURATION_IN_MILLIS = 60; // wait 60 milli s
+
+    private final static int TIMEOUT = 2100;	
+	
 	private boolean active = true;
 	
     private GpioController gpio = null;
     private GpioPinDigitalInput pinEcho = null;
     private GpioPinDigitalOutput pinTrigger = null;
     
-    private long distance = 0;
+    private float distance = 0;
     
     public DistanceSensor() {
         gpio = GpioFactory.getInstance();
 
-        pinEcho = gpio.provisionDigitalInputPin(RaspiPin.GPIO_24, PinPullResistance.PULL_DOWN);
+        pinEcho = gpio.provisionDigitalInputPin(RaspiPin.GPIO_24);
         pinEcho.setShutdownOptions(true);
 
         pinTrigger = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_23);
         pinTrigger.setShutdownOptions(true);    
         
         pinTrigger.low();
-        try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
     
 	@Override
 	public void run() {
-		long pulse_start = 0;
-		long pulse_end = 0;
-		long pulse_duration = 0;
-		
-		while(active) {			
-			pinTrigger.high();
-			try {
-				Thread.sleep(0,10000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		try {
+			while(active) {			
+				triggerSensor();
+				waitForSignal();
+				
+				long duration = measureSignal();
+				
+				distance = duration * SOUND_SPEED / ( 2 * 10000 );
+				
+				System.out.println("Distance = " + distance);
+				
+	            try {
+	                Thread.sleep( WAIT_DURATION_IN_MILLIS );
+	            } catch (InterruptedException ex) {
+	                System.err.println( "Interrupt during trigger" );
+	            }
 			}
-			pinTrigger.low();
-						
-			while(pinEcho.isLow()) {
-				pulse_start = System.currentTimeMillis() * 1000;
-			}
-			
-			while(pinEcho.isHigh()) {
-				pulse_end = System.currentTimeMillis() * 1000;
-			}
-			
-			pulse_duration = pulse_end - pulse_start;		
-			distance = pulse_duration * 17150;
-			
-			System.out.println("Distance = " + distance);
+		} catch (TimeoutException e) {
+			System.out.println("Timeout measuring distance.");
 		}
 	}
 	
-	public long getDistance() {
+    /**
+     * Put a high on the trig pin for TRIG_DURATION_IN_MICROS
+     */
+    private void triggerSensor() {
+        try {
+            this.pinTrigger.high();
+            Thread.sleep( 0, TRIG_DURATION_IN_MICROS * 1000 );
+            this.pinTrigger.low();
+        } catch (InterruptedException ex) {
+            System.err.println( "Interrupt during trigger" );
+        }
+}	
+	
+    /**
+     * Wait for a high on the echo pin
+     * 
+     * @throws DistanceMonitor.TimeoutException if no high appears in time
+     */
+    private void waitForSignal() throws TimeoutException {
+        int countdown = TIMEOUT;
+        
+        while( this.pinEcho.isLow() && countdown > 0 ) {
+            countdown--;
+        }
+        
+        if( countdown <= 0 ) {
+            throw new TimeoutException( "Timeout waiting for signal start" );
+        }
+    }
+    
+    /**
+     * @return the duration of the signal in micro seconds
+     * @throws DistanceMonitor.TimeoutException if no low appears in time
+     */
+    private long measureSignal() throws TimeoutException {
+        int countdown = TIMEOUT;
+        long start = System.nanoTime();
+        while( this.pinEcho.isHigh() && countdown > 0 ) {
+            countdown--;
+        }
+        long end = System.nanoTime();
+        
+        if( countdown <= 0 ) {
+            throw new TimeoutException( "Timeout waiting for signal end" );
+        }
+        
+        return (long)Math.ceil( ( end - start ) / 1000.0 );  // Return micro seconds
+    }
+    
+	public float getDistance() {
 		return distance;
 	}
 	
