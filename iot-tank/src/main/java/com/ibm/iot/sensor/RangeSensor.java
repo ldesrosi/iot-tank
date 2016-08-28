@@ -8,8 +8,8 @@ public class RangeSensor implements Runnable {
 	private final static int TRIG_DURATION_IN_MICROS = 10; // trigger duration of 10 micro s
 	private final static int WAIT_DURATION_IN_MILLIS = 60; // wait 60 milli s
 
-	private final static int TRIGGER_PIN = 14;
-	private final static int ECHO_PIN = 10;
+	private final static int TRIGGER_PIN = 23;
+	private final static int ECHO_PIN = 24;
 
 	private boolean active = true;
 	private double distance = 0;
