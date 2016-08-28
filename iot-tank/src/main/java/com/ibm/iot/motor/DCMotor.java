@@ -11,7 +11,8 @@ public class DCMotor extends Motor {
 		super(address, frequency);	
 		
 		motornum = num;
-
+		System.out.println("Initializing motor # " + motornum);
+		
 		switch (motornum) {
 		case 0:
 			pwmPin = 8;
