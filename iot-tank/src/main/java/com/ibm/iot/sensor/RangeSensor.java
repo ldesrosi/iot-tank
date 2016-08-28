@@ -44,6 +44,7 @@ public class RangeSensor implements Runnable {
 
 			distance = duration * SOUND_SPEED / (2 * 10000);
 			
+			System.out.println("Duration:" + duration);
 			System.out.println("Distance is: " + distance);
 
 			try {
@@ -74,7 +75,8 @@ public class RangeSensor implements Runnable {
 		while (Gpio.digitalRead(ECHO_PIN) == 1) {
 			endTime = System.nanoTime();
 		}
-
+		System.out.println("Start time = " + startTime);
+		System.out.println("EndTime = " + endTime);
 		return (long) Math.ceil((endTime - startTime) / 1000.0); // Return micro
 																	// seconds
 	}
