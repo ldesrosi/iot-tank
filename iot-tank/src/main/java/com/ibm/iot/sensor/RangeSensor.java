@@ -4,9 +4,8 @@ import com.pi4j.wiringpi.Gpio;
 import com.pi4j.wiringpi.GpioUtil;
 
 public class RangeSensor implements Runnable {
-	private final static double SOUND_SPEED = 340.29; // speed of sound in m/s
-	private final static int TRIG_DURATION_IN_MICROS = 10; // trigger duration
-															// // of 10 micro s
+	private final static double SOUND_SPEED = 340.29;      // speed of sound in m/s
+	private final static int TRIG_DURATION_IN_MICROS = 10; // trigger duration of 10 micro s
 	private final static int WAIT_DURATION_IN_MILLIS = 60; // wait 60 milli s
 
 	private final static int TRIGGER_PIN = 14;
@@ -18,6 +17,12 @@ public class RangeSensor implements Runnable {
 	private long startTime = 0;
 	private long endTime = 0;
 
+	static {
+		if (Gpio.wiringPiSetup() == -1) {
+            System.out.println(" ==>> GPIO SETUP FAILED");
+		}
+	}
+	
 	public RangeSensor() {
 		GpioUtil.export(TRIGGER_PIN, GpioUtil.DIRECTION_OUT);
 		Gpio.pinMode(TRIGGER_PIN, Gpio.OUTPUT);
