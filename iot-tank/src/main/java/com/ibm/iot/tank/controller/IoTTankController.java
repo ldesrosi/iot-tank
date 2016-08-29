@@ -1,5 +1,7 @@
 package com.ibm.iot.tank.controller;
 
+import java.util.concurrent.locks.Lock;
+
 import com.google.gson.JsonObject;
 import com.ibm.iot.comms.IoTException;
 import com.ibm.iot.comms.IoTManager;
@@ -10,6 +12,7 @@ import com.ibm.iot.tank.Tank;
 public class IoTTankController implements TankController {
 	private Tank tank = null;
 	private long sessionId = -1;
+	private boolean turning = false;
 
 	public IoTTankController(Tank tank) {
 		this.tank = tank;
@@ -20,16 +23,18 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void onDistanceChange(RangeEvent event) {
-		JsonObject jsonEvent = new JsonObject();
-		jsonEvent.addProperty("lastDistance", event.getLastDistance());
-		jsonEvent.addProperty("lastTime", event.getLastEventTime());
-		jsonEvent.addProperty("distance", event.getDistance());
-		jsonEvent.addProperty("eventTime", event.getEventTime());
-
-		try {
-			IoTManager.getManager().sendEvent("distanceUpdate", jsonEvent);
-		} catch (IoTException e) {
-			e.printStackTrace();
+		if (sessionId != -1 && !turning) {
+			JsonObject jsonEvent = new JsonObject();
+			jsonEvent.addProperty("lastDistance", event.getLastDistance());
+			jsonEvent.addProperty("lastTime", event.getLastEventTime());
+			jsonEvent.addProperty("distance", event.getDistance());
+			jsonEvent.addProperty("eventTime", event.getEventTime());
+	
+			try {
+				IoTManager.getManager().sendEvent("distanceUpdate", jsonEvent);
+			} catch (IoTException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -50,9 +55,11 @@ public class IoTTankController implements TankController {
 				tank.backward();
 				break;
 			case "turnLeft":
+				turning = true;
 				tank.left();
 				break;
 			case "turnRight":
+				turning = true;
 				tank.right();
 				break;
 			case "stop":
@@ -73,6 +80,8 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void processTurnComplete(String side) {
+		turning = false;
+		
 		JsonObject jsonEvent = new JsonObject();
 		jsonEvent.addProperty("turn", side);
 
@@ -87,16 +96,17 @@ public class IoTTankController implements TankController {
 	 * Commands are received from IoT. No-op for this method
 	 */
 	public void run() {
-		sessionId = System.currentTimeMillis();
+		long id = System.currentTimeMillis();
 		
 		JsonObject jsonEvent = new JsonObject();
-		jsonEvent.addProperty("sessionId", sessionId);
+		jsonEvent.addProperty("sessionId", id);
 
 		try {
 			IoTManager.getManager().sendEvent("sessionStarted", jsonEvent);
 		} catch (IoTException e) {
 			e.printStackTrace();
 		}
+		sessionId = id;
 	}
 
 }
