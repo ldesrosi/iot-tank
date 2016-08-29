@@ -14,6 +14,7 @@ public class BasicTankController implements TankController {
 	@Override
 	public void onDistanceChange(double lastDistance, double distance) {
 		if (distance < 5) {
+			System.out.println("Collision detected.  Changing course.");
 			turnLeft = !turnLeft;
 			try {			
 				if (turnLeft)

@@ -34,18 +34,25 @@ public class Tank {
 		
 		controller = listener;
 	}
+	public void setSpeed(int speed) throws MotorException {
+		leftMotor.setSpeed(speed);
+		rightMotor.setSpeed(speed);
+	}
 	
 	public void forward() throws MotorException {
 		leftMotor.run(MotorCommandEnum.FORWARD);
 		rightMotor.run(MotorCommandEnum.FORWARD);
+		setSpeed(150);
 	}
 	
 	public void backward() throws MotorException {
 		leftMotor.run(MotorCommandEnum.BACKWARD);
 		rightMotor.run(MotorCommandEnum.BACKWARD);
+		setSpeed(150);
 	}
 	
 	public void stop() throws MotorException {
+		setSpeed(0);
 		leftMotor.run(MotorCommandEnum.RELEASE);
 		rightMotor.run(MotorCommandEnum.RELEASE);
 	}
