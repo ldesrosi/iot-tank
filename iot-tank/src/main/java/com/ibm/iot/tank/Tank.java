@@ -31,6 +31,8 @@ public class Tank {
 		rangeSensor.addListener(listener);
 		rangeSensorThread = new Thread(rangeSensor);
 		rangeSensorThread.start();
+		
+		controller = listener;
 	}
 	
 	public void forward() throws MotorException {
