@@ -8,7 +8,7 @@ import com.pi4j.wiringpi.Gpio;
 public class RangeSensor implements Runnable {
 	private final static double SOUND_SPEED = 340.29;      // speed of sound in m/s
 	private final static int TRIG_DURATION_IN_MICROS = 10; // trigger duration of 10 micro s
-	private final static int WAIT_DURATION_IN_MILLIS = 100; // wait 60 milli s
+	private final static int WAIT_DURATION_IN_MILLIS = 200; // 
 
 	private final static int TRIGGER_PIN = 23;
 	private final static int ECHO_PIN = 24;
@@ -41,6 +41,7 @@ public class RangeSensor implements Runnable {
 		System.out.println("Range Sensor Activated");
 		while (active) {
 			double lastDistance = distance;
+			long lastDistanceTime = endTime;
 			
 			Gpio.digitalWrite(TRIGGER_PIN, 1);
 			Gpio.delayMicroseconds(TRIG_DURATION_IN_MICROS);
@@ -58,7 +59,7 @@ public class RangeSensor implements Runnable {
 
 			distance = duration * SOUND_SPEED / (2 * 10000);
 			
-			dispatchEvents(lastDistance, distance);
+			dispatchEvents(lastDistance, lastDistanceTime, distance, endTime);
 			
 			try {
 				Thread.sleep(WAIT_DURATION_IN_MILLIS);
@@ -74,9 +75,15 @@ public class RangeSensor implements Runnable {
 		listeners.add(listener);
 	}
 	
-	private void dispatchEvents(double lastDist, double dist) {
+	private void dispatchEvents(double lastDist, long lastDistTime, double dist, long distTime) {
+		RangeEvent event = new RangeEvent();
+		event.setDistance(dist);
+		event.setEventTime(distTime);
+		event.setLastDistance(lastDist);
+		event.setLastEventTime(lastDistTime);
+		
 		listeners.forEach(listener->{
-			listener.onDistanceChange(lastDist, dist);
+			listener.onDistanceChange(event);
 		});
 	}
 

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.ibm.iotf.client.device.Command;
 import com.ibm.iotf.client.device.CommandCallback;
 import com.ibm.iotf.client.device.DeviceClient;
@@ -63,8 +64,11 @@ public class IoTManager implements CommandCallback {
 	
 	@Override
 	public void processCommand(Command cmd) {
-		listeners.forEach(listener->{
-			listener.processCommand(cmd.getCommand(), cmd.getPayload());
+		JsonParser parser = new JsonParser();
+		final JsonObject payload  = parser.parse(cmd.getPayload()).getAsJsonObject();
+
+		listeners.forEach(listener->{			
+			listener.processCommand(cmd.getCommand(), payload);
 		});
 	}
 	
