@@ -6,14 +6,16 @@ public class ManageMovement {
     public static JsonObject main(JsonObject input) {
     	JsonObject tankCommand = new JsonObject();
     	
-    	tankCommand.addProperty("deviceId", input.getAsJsonPrimitive("deviceId").getAsString());
-    	tankCommand.addProperty("sessionId", input.getAsJsonPrimitive("sessionId").getAsLong());
+    	String deviceId = input.getAsJsonPrimitive("deviceId").getAsString();
+    	long sessionId =  input.getAsJsonPrimitive("sessionId").getAsLong();
+    	tankCommand.addProperty("deviceId", deviceId);
+    	tankCommand.addProperty("sessionId", sessionId);
 
     	tankCommand.addProperty("command", "forward");    
     	tankCommand.addProperty("speed",100);
     	
     	// For persistence to Cloudant
-    	tankCommand.addProperty("_id", input.getAsJsonPrimitive("deviceId").getAsString());
+    	tankCommand.addProperty("_id", deviceId + "-" + sessionId);
     	tankCommand.addProperty("doc", tankCommand.toString());
 
     	return tankCommand;

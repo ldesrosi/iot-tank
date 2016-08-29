@@ -44,6 +44,8 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void processCommand(String command, JsonObject payload) {
+		System.out.println("Received command" + command + " with data " + payload.toString());
+		
 		//We should always be processing the same session id
 		assert(sessionId == payload.getAsJsonPrimitive("sessionId").getAsLong());
 		try {
