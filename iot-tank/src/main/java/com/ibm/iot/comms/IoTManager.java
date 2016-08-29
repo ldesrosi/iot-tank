@@ -1,36 +1,73 @@
 package com.ibm.iot.comms;
 
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
-//import com.google.gson.JsonObject;
-//
-//import com.ibm.iotf.client.device.CommandCallback;
+import com.google.gson.JsonObject;
+import com.ibm.iotf.client.device.Command;
+import com.ibm.iotf.client.device.CommandCallback;
 import com.ibm.iotf.client.device.DeviceClient;
 
-public class IoTManager {
-  public static void main(String[] args) {
-    Properties options = new Properties();
-    try {
-       options.load(IoTManager.class.getResourceAsStream("/iotf.properties"));
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(-1);
-    }
+public class IoTManager implements CommandCallback {
+	private static IoTManager manager = null;
+	private DeviceClient client = null;
+	
+	private List<CommandListener> listeners = new LinkedList<CommandListener>();
+	
+	public static IoTManager getManager() throws IoTException {
+		if (manager == null) {
+			IoTManager amgr = new IoTManager();
+			amgr.init();
+			
+			manager = amgr;
+		}
+		return manager;
+	}
+	
+	private IoTManager() {
+	}
+	
+	public void init() throws IoTException {
+	    Properties options = new Properties();
 
-    DeviceClient myClient = null;
-    try {
-      //Instantiate the class by passing the properties file
-      myClient = new DeviceClient(options);
+	    try {
+			options.load(IoTManager.class.getResourceAsStream("/iotf.properties"));
+		} catch (IOException e) {
+			throw new IoTException("Error loading configuration file.", e);
+		}
 
-      //Connect to the IBM IoT Foundation
-      myClient.connect();
- 
+    	//Instantiate the class by passing the properties file
+    	try {
+			client = new DeviceClient(options);
+			
+			client.setCommandCallback(this);
+			
+	    	//Connect to the IBM IoT Foundation
+	    	client.connect();
+		} catch (Exception e) {
+			throw new IoTException("Error connecting to the IoT Foundation", e);
+		}
+	}
 
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(-1); 
-    }
+	public void sendEvent(String topic, JsonObject event) {
+		client.publishEvent(topic, event, 0); 
+	}
 
-  }
+	public void addListener(CommandListener listener) {
+		assert(listener != null);
+		
+		listeners.add(listener);
+	}
+	
+	@Override
+	public void processCommand(Command cmd) {
+		listeners.forEach(listener->{
+			listener.processCommand(cmd.getCommand(), cmd.getPayload());
+		});
+	}
+	
+	
 }
 

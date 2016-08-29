@@ -1,5 +1,7 @@
 package com.ibm.iot.motor;
 
+import com.pi4j.wiringpi.Gpio;
+
 public class Motor {
 	private PWM pwm = null;
 
@@ -28,5 +30,9 @@ public class Motor {
 	protected void setPWM(int pin, int on, int off) throws MotorException {
 		pwm.setPWM(pin, on, off);
 
+	}
+	
+	public static void delay(long timeMS) {
+		Gpio.delay(timeMS);
 	}
 }

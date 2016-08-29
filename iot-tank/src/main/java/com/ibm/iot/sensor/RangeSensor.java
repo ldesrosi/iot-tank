@@ -1,5 +1,8 @@
 package com.ibm.iot.sensor;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.pi4j.wiringpi.Gpio;
 
 public class RangeSensor implements Runnable {
@@ -11,10 +14,12 @@ public class RangeSensor implements Runnable {
 	private final static int ECHO_PIN = 24;
 
 	private boolean active = true;
-	private double distance = 0;
+	private double distance = -1;
 
 	private long startTime = 0;
 	private long endTime = 0;
+	
+	private List<RangeListener> listeners = new LinkedList<RangeListener>();
 
 	static {
 		//Using BCM Pin mapping
@@ -35,6 +40,8 @@ public class RangeSensor implements Runnable {
 	public void run() {
 		System.out.println("Range Sensor Activated");
 		while (active) {
+			double lastDistance = distance;
+			
 			Gpio.digitalWrite(TRIGGER_PIN, 1);
 			Gpio.delayMicroseconds(TRIG_DURATION_IN_MICROS);
 			Gpio.digitalWrite(TRIGGER_PIN, 0);
@@ -51,12 +58,26 @@ public class RangeSensor implements Runnable {
 
 			distance = duration * SOUND_SPEED / (2 * 10000);
 			
+			dispatchEvents(lastDistance, distance);
+			
 			try {
 				Thread.sleep(WAIT_DURATION_IN_MILLIS);
 			} catch (InterruptedException ex) {
 				System.err.println("Interrupt during trigger");
 			}
 		}
+	}
+
+	public void addListener(RangeListener listener) {
+		assert(listener != null);
+		
+		listeners.add(listener);
+	}
+	
+	private void dispatchEvents(double lastDist, double dist) {
+		listeners.forEach(listener->{
+			listener.onDistanceChange(lastDist, dist);
+		});
 	}
 
 	public double getDistance() {
