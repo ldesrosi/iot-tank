@@ -30,11 +30,11 @@ public class IoTTankController implements TankController {
 			jsonEvent.addProperty("distance", event.getDistance());
 			jsonEvent.addProperty("eventTime", event.getEventTime());
 	
-			try {
-				IoTManager.getManager().sendEvent("distanceUpdate", jsonEvent);
-			} catch (IoTException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				IoTManager.getManager().sendEvent("distanceUpdate", jsonEvent);
+//			} catch (IoTException e) {
+//				e.printStackTrace();
+//			}
 		}
 	}
 
