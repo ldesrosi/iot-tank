@@ -1,13 +1,26 @@
 package com.ibm.iot.tank;
 
+import com.ibm.iot.motor.MotorException;
 import com.ibm.iot.tank.controller.BasicTankController;
 import com.ibm.iot.tank.controller.TankController;
 
 public class App {
 	public static void main(String[] args) {
 		try {
-			Tank tank = new Tank();
-			TankController controller = new BasicTankController(tank);
+			final Tank tank = new Tank();
+			final TankController controller = new BasicTankController(tank);
+			
+			Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						tank.stop();
+					} catch (MotorException e) {
+						e.printStackTrace();
+					}				
+				}
+			}));
 			
 			tank.init(controller);
 			controller.run();

@@ -14,6 +14,7 @@ public class Tank {
 	public static int LEFT_MOTOR = 0;
 	public static int RIGHT_MOTOR = 3;
 	private static long TURN_WAIT = 1000;
+	private static int SPEED = 100;
 	
 	private DCMotor leftMotor = null;
 	private DCMotor rightMotor = null;
@@ -42,13 +43,13 @@ public class Tank {
 	public void forward() throws MotorException {
 		leftMotor.run(MotorCommandEnum.FORWARD);
 		rightMotor.run(MotorCommandEnum.FORWARD);
-		setSpeed(150);
+		setSpeed(SPEED);
 	}
 	
 	public void backward() throws MotorException {
 		leftMotor.run(MotorCommandEnum.BACKWARD);
 		rightMotor.run(MotorCommandEnum.BACKWARD);
-		setSpeed(150);
+		setSpeed(SPEED);
 	}
 	
 	public void stop() throws MotorException {
