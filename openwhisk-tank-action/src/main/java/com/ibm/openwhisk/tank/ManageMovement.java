@@ -11,7 +11,7 @@ public class ManageMovement {
     	tankCommand.addProperty("deviceId", deviceId);
     	tankCommand.addProperty("sessionId", sessionId);
 
-    	tankCommand.addProperty("command", "forward");    
+    	tankCommand.addProperty("command", "moveForward");    
     	tankCommand.addProperty("speed",100);
     	
     	// For persistence to Cloudant

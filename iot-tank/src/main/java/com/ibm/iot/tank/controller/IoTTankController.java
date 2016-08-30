@@ -1,7 +1,5 @@
 package com.ibm.iot.tank.controller;
 
-import java.util.concurrent.locks.Lock;
-
 import com.google.gson.JsonObject;
 import com.ibm.iot.comms.IoTException;
 import com.ibm.iot.comms.IoTManager;
@@ -23,18 +21,24 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void onDistanceChange(RangeEvent event) {
+		System.out.println("Session ID=" + sessionId + ", turning=" + turning);
+		
 		if (sessionId != -1 && !turning) {
+
+			System.out.println("Sending a distance update");
+			
 			JsonObject jsonEvent = new JsonObject();
+			jsonEvent.addProperty("sessionId", sessionId);
 			jsonEvent.addProperty("lastDistance", event.getLastDistance());
 			jsonEvent.addProperty("lastTime", event.getLastEventTime());
 			jsonEvent.addProperty("distance", event.getDistance());
 			jsonEvent.addProperty("eventTime", event.getEventTime());
 	
-//			try {
-//				IoTManager.getManager().sendEvent("distanceUpdate", jsonEvent);
-//			} catch (IoTException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				IoTManager.getManager().sendEvent("tankDistance", jsonEvent);
+			} catch (IoTException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -44,11 +48,17 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void processCommand(String command, JsonObject payload) {
-		System.out.println("Received command" + command + " with data " + payload.toString());
+		payload = payload.getAsJsonObject("d");
+		System.out.println("Received command " + command + " with data " + payload.toString());
 		
 		//We should always be processing the same session id
 		assert(sessionId == payload.getAsJsonPrimitive("sessionId").getAsLong());
+				
 		try {
+			if (payload.has("speed")) {
+				tank.setSpeed(payload.getAsJsonPrimitive("speed").getAsInt());
+			}
+			
 			switch (command) {
 			case "moveForward":
 				tank.forward();
@@ -85,6 +95,7 @@ public class IoTTankController implements TankController {
 		turning = false;
 		
 		JsonObject jsonEvent = new JsonObject();
+		jsonEvent.addProperty("sessionId", sessionId);
 		jsonEvent.addProperty("turn", side);
 
 		try {
