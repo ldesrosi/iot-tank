@@ -21,8 +21,6 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void onDistanceChange(RangeEvent event) {
-		System.out.println("Session ID=" + sessionId + ", turning=" + turning);
-		
 		if (sessionId != -1 && !turning) {
 
 			System.out.println("Sending a distance update");
