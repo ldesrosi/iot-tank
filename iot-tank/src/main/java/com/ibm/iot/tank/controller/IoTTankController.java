@@ -33,7 +33,9 @@ public class IoTTankController implements TankController {
 			try {
 				IoTManager.getManager().sendEvent("tankDistance", jsonEvent);
 				
-				Thread.sleep(500);
+				if (event.getDistance() > 10) {
+					Thread.sleep(500);
+				}
 			} catch (IoTException | InterruptedException e) {
 				e.printStackTrace();
 			}
