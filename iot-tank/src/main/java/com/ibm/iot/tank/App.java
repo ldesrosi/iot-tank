@@ -26,6 +26,7 @@ public class App {
 			}));
 			
 			//manager.addListener(controller);
+			((IoTTankController)controller).init();
 			tank.init(controller);
 			controller.run();
 			
