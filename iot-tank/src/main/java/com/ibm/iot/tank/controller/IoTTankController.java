@@ -24,7 +24,7 @@ public class IoTTankController implements TankController {
 		System.out.println("Distance=" + event.getDistance());
 		
 		if (sessionId != -1 && !turning) {
-			
+			System.out.println("Getting ready to send distance");
 			JsonObject jsonEvent = new JsonObject();
 			jsonEvent.addProperty("sessionId", sessionId);
 			jsonEvent.addProperty("lastDistance", event.getLastDistance());
@@ -33,8 +33,9 @@ public class IoTTankController implements TankController {
 			jsonEvent.addProperty("eventTime", event.getEventTime());
 	
 			try {
+				System.out.println("Before distanceChange event");
 				IoTManager.getManager().sendEvent("tankDistance", jsonEvent);
-				
+				System.out.println("After distanceChange event");
 				Thread.sleep(500);
 
 			} catch (IoTException | InterruptedException e) {
