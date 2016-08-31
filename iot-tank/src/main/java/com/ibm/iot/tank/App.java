@@ -9,8 +9,6 @@ import com.ibm.iot.tank.controller.TankController;
 public class App {
 	public static void main(String[] args) {
 		try {
-			//Start by connecting to IoT before starting any other thread.
-			IoTManager manager = IoTManager.getManager();
 			
 			final Tank tank = new Tank();
 			final TankController controller = new IoTTankController(tank);
@@ -27,7 +25,7 @@ public class App {
 				}
 			}));
 			
-			manager.addListener(controller);
+			//manager.addListener(controller);
 			tank.init(controller);
 			controller.run();
 			

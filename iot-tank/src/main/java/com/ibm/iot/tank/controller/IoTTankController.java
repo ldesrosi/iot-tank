@@ -11,9 +11,28 @@ public class IoTTankController implements TankController {
 	private Tank tank = null;
 	private long sessionId = -1;
 	private boolean turning = false;
+	private IoTManager distanceIoT = null;
+	private IoTManager commandIoT = null;
+	private IoTManager eventIoT = null;
 
 	public IoTTankController(Tank tank) {
 		this.tank = tank;
+		distanceIoT = new IoTManager();
+		eventIoT = new IoTManager();
+		commandIoT = new IoTManager();
+	}
+	
+	public void init() {
+		try {
+			distanceIoT.init(false);
+			eventIoT.init(false);
+			commandIoT.init(true);
+			commandIoT.addListener(this);
+
+		} catch (IoTException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 	}
 
 	/**
@@ -34,11 +53,11 @@ public class IoTTankController implements TankController {
 	
 			try {
 				System.out.println("Before distanceChange event");
-				IoTManager.getManager().sendEvent("tankDistance", jsonEvent);
+				distanceIoT.sendEvent("tankDistance", jsonEvent);
 				System.out.println("After distanceChange event");
 				Thread.sleep(500);
 
-			} catch (IoTException | InterruptedException e) {
+			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
@@ -104,13 +123,9 @@ public class IoTTankController implements TankController {
 		jsonEvent.addProperty("sessionId", sessionId);
 		jsonEvent.addProperty("turn", side);
 
-		try {
-			System.out.println("Before sending turnComplete");
-			IoTManager.getManager().sendEvent("turnComplete", jsonEvent);
-			System.out.println("After sending turnComplete");
-		} catch (IoTException e) {
-			e.printStackTrace();
-		}
+		System.out.println("Before sending turnComplete");
+		eventIoT.sendEvent("turnComplete", jsonEvent);
+		System.out.println("After sending turnComplete");
 		System.out.println("Out of processTurnComplete");
 	}
 
@@ -123,11 +138,7 @@ public class IoTTankController implements TankController {
 		JsonObject jsonEvent = new JsonObject();
 		jsonEvent.addProperty("sessionId", id);
 
-		try {
-			IoTManager.getManager().sendEvent("sessionStarted", jsonEvent);
-		} catch (IoTException e) {
-			e.printStackTrace();
-		}
+		eventIoT.sendEvent("sessionStarted", jsonEvent);
 		sessionId = id;
 	}
 
