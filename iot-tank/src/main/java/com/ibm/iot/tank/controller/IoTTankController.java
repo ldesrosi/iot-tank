@@ -92,6 +92,7 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void processTurnComplete(String side) {
+		System.out.println("Turn is complete, sending event");
 		turning = false;
 		
 		JsonObject jsonEvent = new JsonObject();

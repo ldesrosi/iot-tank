@@ -24,16 +24,16 @@ public class Tank {
 	
 	private TankController controller = null;
 	
-	public void init(TankController listener) throws MotorException {
+	public void init(TankController ctrl) throws MotorException {
 		leftMotor = new DCMotor(0x60, 1600, LEFT_MOTOR);
 		rightMotor = new DCMotor(0x60, 1600, RIGHT_MOTOR);
 		
 		rangeSensor = new RangeSensor();
-		rangeSensor.addListener(listener);
+		rangeSensor.addListener(ctrl);
 		rangeSensorThread = new Thread(rangeSensor);
 		rangeSensorThread.start();
 		
-		controller = listener;
+		controller = ctrl;
 	}
 	public void setSpeed(int speed) throws MotorException {
 		leftMotor.setSpeed(speed);
@@ -62,6 +62,7 @@ public class Tank {
 		leftMotor.run(MotorCommandEnum.BACKWARD);
 		rightMotor.run(MotorCommandEnum.FORWARD);
 		Motor.delay(TURN_WAIT);
+		System.out.println("About to call the turn complete");
 		controller.processTurnComplete(LEFT);
 	}
 	
