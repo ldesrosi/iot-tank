@@ -21,6 +21,8 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void onDistanceChange(RangeEvent event) {
+		System.out.println("Distance=" + event.getDistance());
+		
 		if (sessionId != -1 && !turning) {
 			
 			JsonObject jsonEvent = new JsonObject();
