@@ -33,9 +33,8 @@ public class IoTTankController implements TankController {
 			try {
 				IoTManager.getManager().sendEvent("tankDistance", jsonEvent);
 				
-				if (event.getDistance() > 10) {
-					Thread.sleep(500);
-				}
+				Thread.sleep(500);
+
 			} catch (IoTException | InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -48,6 +47,9 @@ public class IoTTankController implements TankController {
 	 */
 	@Override
 	public void processCommand(String command, JsonObject payload) {
+		//We do not process other commands until the turn is complete.  Discard message.
+		if (turning) return;
+		
 		payload = payload.getAsJsonObject("d");
 		System.out.println("Received command " + command + " with data " + payload.toString());
 		
