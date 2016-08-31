@@ -1,5 +1,8 @@
 package com.ibm.iot.tank.controller;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
+
 import com.google.gson.JsonObject;
 import com.ibm.iot.comms.IoTException;
 import com.ibm.iot.comms.IoTManager;
@@ -11,28 +14,29 @@ public class IoTTankController implements TankController {
 	private Tank tank = null;
 	private long sessionId = -1;
 	private boolean turning = false;
-	private IoTManager distanceIoT = null;
-	private IoTManager commandIoT = null;
-	private IoTManager eventIoT = null;
+
+	BlockingQueue<Event> eventQueue = null;
+	Thread iotEventProducer = null;
 
 	public IoTTankController(Tank tank) {
 		this.tank = tank;
-		distanceIoT = new IoTManager();
-		eventIoT = new IoTManager();
-		commandIoT = new IoTManager();
-	}
-	
-	public void init() {
-		try {
-			distanceIoT.init(false);
-			eventIoT.init(false);
-			commandIoT.init(true);
-			commandIoT.addListener(this);
-
-		} catch (IoTException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
+		eventQueue = new LinkedTransferQueue<Event>();
+		
+		iotEventProducer = new Thread(new Runnable() {		
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						Event event = eventQueue.take();
+						IoTManager.getManager().sendEvent(event.topic, event.data);
+					} catch (InterruptedException | IoTException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}
+			}
+		});
 	}
 
 	/**
@@ -53,7 +57,7 @@ public class IoTTankController implements TankController {
 	
 			try {
 				System.out.println("Before distanceChange event");
-				distanceIoT.sendEvent("tankDistance", jsonEvent);
+				eventQueue.add(new Event("tankDistance", jsonEvent));
 				System.out.println("After distanceChange event");
 				Thread.sleep(500);
 
@@ -124,7 +128,7 @@ public class IoTTankController implements TankController {
 			jsonEvent.addProperty("turn", side);
 	
 			System.out.println("Before sending turnComplete");
-			eventIoT.sendEvent("turnComplete", jsonEvent);
+			eventQueue.add(new Event("turnComplete", jsonEvent));
 			System.out.println("After sending turnComplete");
 			System.out.println("Out of processTurnComplete");
 		} finally {
@@ -136,13 +140,24 @@ public class IoTTankController implements TankController {
 	 * Commands are received from IoT. No-op for this method
 	 */
 	public void run() {
+		iotEventProducer.start();
+		
 		long id = System.currentTimeMillis();
 		
 		JsonObject jsonEvent = new JsonObject();
 		jsonEvent.addProperty("sessionId", id);
 
-		eventIoT.sendEvent("sessionStarted", jsonEvent);
+		eventQueue.add(new Event("sessionStarted", jsonEvent));
 		sessionId = id;
 	}
 
+}
+
+class Event {
+	public Event(String topic, JsonObject data) {
+		this.topic = topic;
+		this.data = data;
+	}
+	public String topic;
+	public JsonObject data;
 }

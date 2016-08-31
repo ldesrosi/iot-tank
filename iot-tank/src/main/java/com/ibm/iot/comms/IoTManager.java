@@ -12,25 +12,25 @@ import com.ibm.iotf.client.device.CommandCallback;
 import com.ibm.iotf.client.device.DeviceClient;
 
 public class IoTManager implements CommandCallback {
-	//private static IoTManager manager = null;
+	private static IoTManager manager = null;
 	private DeviceClient client = null;
 	
 	private List<CommandListener> listeners = new LinkedList<CommandListener>();
 	
-//	public static IoTManager getManager() throws IoTException {
-//		if (manager == null) {
-//			IoTManager amgr = new IoTManager();
-//			amgr.init();
-//			
-//			manager = amgr;
-//		}
-//		return manager;
-//	}
-//	
-//	private IoTManager() {
-//	}
+	public static IoTManager getManager() throws IoTException {
+		if (manager == null) {
+			IoTManager amgr = new IoTManager();
+			amgr.init();
+			
+			manager = amgr;
+		}
+		return manager;
+	}
 	
-	public void init(boolean listenToEvent) throws IoTException {
+	private IoTManager() {
+	}
+	
+	public void init() throws IoTException {
 	    Properties options = new Properties();
 
 	    try {
@@ -43,9 +43,7 @@ public class IoTManager implements CommandCallback {
     	try {
 			client = new DeviceClient(options);
 			
-			if (listenToEvent) {
-				client.setCommandCallback(this);
-			}
+			client.setCommandCallback(this);
 			
 	    	//Connect to the IBM IoT Foundation
 	    	client.connect();
