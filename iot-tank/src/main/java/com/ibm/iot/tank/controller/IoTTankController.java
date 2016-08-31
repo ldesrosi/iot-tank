@@ -104,10 +104,13 @@ public class IoTTankController implements TankController {
 		jsonEvent.addProperty("turn", side);
 
 		try {
+			System.out.println("Before sending turnComplete");
 			IoTManager.getManager().sendEvent("turnComplete", jsonEvent);
+			System.out.println("After sending turnComplete");
 		} catch (IoTException e) {
 			e.printStackTrace();
 		}
+		System.out.println("Out of processTurnComplete");
 	}
 
 	/**

@@ -53,7 +53,9 @@ public class IoTManager implements CommandCallback {
 	}
 
 	public void sendEvent(String topic, JsonObject event) {
+		System.out.println("Before publish");
 		client.publishEvent(topic, event, 0); 
+		System.out.println("After publish");
 	}
 
 	public void addListener(CommandListener listener) {

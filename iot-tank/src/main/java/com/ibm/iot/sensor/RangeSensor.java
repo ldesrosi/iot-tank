@@ -68,6 +68,7 @@ public class RangeSensor implements Runnable {
 				System.err.println("Interrupt during trigger");
 			}
 		}
+		System.out.println("Out of loop");
 	}
 
 	public void addListener(RangeListener listener) {
