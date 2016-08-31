@@ -117,16 +117,19 @@ public class IoTTankController implements TankController {
 	@Override
 	public void processTurnComplete(String side) {
 		System.out.println("Turn is complete, sending event");
-		turning = false;
-		
-		JsonObject jsonEvent = new JsonObject();
-		jsonEvent.addProperty("sessionId", sessionId);
-		jsonEvent.addProperty("turn", side);
-
-		System.out.println("Before sending turnComplete");
-		eventIoT.sendEvent("turnComplete", jsonEvent);
-		System.out.println("After sending turnComplete");
-		System.out.println("Out of processTurnComplete");
+		try {
+			
+			JsonObject jsonEvent = new JsonObject();
+			jsonEvent.addProperty("sessionId", sessionId);
+			jsonEvent.addProperty("turn", side);
+	
+			System.out.println("Before sending turnComplete");
+			eventIoT.sendEvent("turnComplete", jsonEvent);
+			System.out.println("After sending turnComplete");
+			System.out.println("Out of processTurnComplete");
+		} finally {
+			turning = false;
+		}
 	}
 
 	/**
