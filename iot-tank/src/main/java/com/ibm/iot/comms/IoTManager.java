@@ -64,6 +64,7 @@ public class IoTManager implements CommandCallback {
 	
 	@Override
 	public void processCommand(Command cmd) {
+		System.out.println("Command received:" + cmd.toString());
 		JsonParser parser = new JsonParser();
 		final JsonObject payload  = parser.parse(cmd.getPayload()).getAsJsonObject();
 
