@@ -53,9 +53,7 @@ public class IoTManager implements CommandCallback {
 	}
 
 	public void sendEvent(String topic, JsonObject event) {
-		System.out.println("Before publish " + topic);
 		client.publishEvent(topic, event, 0); 
-		System.out.println("After publish " + topic);
 	}
 
 	public void addListener(CommandListener listener) {
@@ -66,7 +64,6 @@ public class IoTManager implements CommandCallback {
 	
 	@Override
 	public void processCommand(Command cmd) {
-		System.out.println("Command received:" + cmd.toString());
 		JsonParser parser = new JsonParser();
 		final JsonObject payload  = parser.parse(cmd.getPayload()).getAsJsonObject();
 

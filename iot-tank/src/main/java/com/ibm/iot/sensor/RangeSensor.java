@@ -40,7 +40,6 @@ public class RangeSensor implements Runnable {
 	public void run() {
 		System.out.println("Range Sensor Activated");
 		while (active) {
-			System.out.println("Active="+active);
 			double lastDistance = distance;
 			long lastDistanceTime = endTime;
 			
@@ -68,7 +67,6 @@ public class RangeSensor implements Runnable {
 				System.err.println("Interrupt during trigger");
 			}
 		}
-		System.out.println("Out of loop");
 	}
 
 	public void addListener(RangeListener listener) {

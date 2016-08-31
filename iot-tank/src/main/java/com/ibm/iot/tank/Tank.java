@@ -62,7 +62,6 @@ public class Tank {
 		leftMotor.run(MotorCommandEnum.BACKWARD);
 		rightMotor.run(MotorCommandEnum.FORWARD);
 		Motor.delay(TURN_WAIT);
-		System.out.println("About to call the turn complete");
 		controller.processTurnComplete(LEFT);
 	}
 	
