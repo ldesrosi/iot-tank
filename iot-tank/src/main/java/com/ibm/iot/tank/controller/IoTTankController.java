@@ -53,15 +53,17 @@ public class IoTTankController implements TankController {
 	@Override
 	public void onDistanceChange(RangeEvent event) {		
 		if (sessionId != -1 && !turning) {
-			
 			if (lastSentEvent == null) {
 				// If this is the first distance event we send it
+				System.out.println("Sending first range report");
 				sendRangeEvent(event);
-			} else if (event.getDistance() < 10 && lastSentEvent.getDistance() >=10) {
+			} else if (event.getDistance() < 10 && lastSentEvent.getDistance() >= 10) {
 				// If the tank is less then 10 cm away from collision 
 				// and this is the first event reporting it we send it
+				System.out.println("Sending close range report");
 				sendRangeEvent(event);
 			} else if ((lastSentEvent.getDistance() - event.getDistance()) > 10) {
+				System.out.println("Sending range update report");
 				// If the distance between the point where we last sent the event
 				// and this event is more then 10 cm we need to update so we sent the event.
 				sendRangeEvent(event);
