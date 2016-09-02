@@ -4,6 +4,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 
 import com.google.gson.JsonObject;
+import com.ibm.iot.camera.TankVision;
 import com.ibm.iot.comms.IoTException;
 import com.ibm.iot.comms.IoTManager;
 import com.ibm.iot.motor.MotorException;
@@ -27,6 +28,7 @@ public class IoTTankController implements TankController {
 
 	BlockingQueue<Event> eventQueue = null;
 	Thread iotEventProducer = null;
+	Thread tankVisionThread = null;
 
 	public IoTTankController(Tank tank) {
 		this.tank = tank;
@@ -146,6 +148,7 @@ public class IoTTankController implements TankController {
 	
 			eventQueue.add(new Event("turnComplete", jsonEvent));
 		} finally {
+			lastSentEvent = null; //We reset the range event
 			turning = false;
 		}
 	}
@@ -164,5 +167,4 @@ public class IoTTankController implements TankController {
 		eventQueue.add(new Event("sessionStarted", jsonEvent));
 		sessionId = id;
 	}
-
 }

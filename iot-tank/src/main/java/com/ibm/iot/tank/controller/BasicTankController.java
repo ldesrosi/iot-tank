@@ -1,6 +1,7 @@
 package com.ibm.iot.tank.controller;
 
 import com.google.gson.JsonObject;
+import com.ibm.iot.camera.TankVision;
 import com.ibm.iot.motor.MotorException;
 import com.ibm.iot.sensor.RangeEvent;
 import com.ibm.iot.tank.Tank;
@@ -63,5 +64,4 @@ public class BasicTankController implements TankController {
 			e.printStackTrace();
 		}		
 	}
-
 }
