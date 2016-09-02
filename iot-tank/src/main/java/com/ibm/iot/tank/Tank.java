@@ -11,7 +11,7 @@ public class Tank {
 	public static final String LEFT = "LEFT";
 	public static final String RIGHT = "RIGHT";
 	
-	public static int LEFT_MOTOR = 0;
+	public static int LEFT_MOTOR = 1;
 	public static int RIGHT_MOTOR = 3;
 	private static long TURN_WAIT = 1000;
 	private static int SPEED = 100;

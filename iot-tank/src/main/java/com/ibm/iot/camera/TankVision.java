@@ -42,12 +42,13 @@ public class TankVision implements Runnable {
 			}
 		    
 			piCamera = new RPiCamera();
-			piCamera.setWidth(100);
-			piCamera.setHeight(100);
+			piCamera.setWidth(10);
+			piCamera.setHeight(10);
 			piCamera.setEncoding(Encoding.JPG); // Change encoding of images to PNG
 
 			dbClient = ClientBuilder.account(prop.getProperty("account"))
 					.username(prop.getProperty("username")).password(prop.getProperty("password")).build();
+
 			db = dbClient.database(prop.getProperty("database"), false);
 			
 		} catch (FailedToRunRaspistillException e) {
@@ -73,7 +74,7 @@ public class TankVision implements Runnable {
 				ImageIO.write(buffer, "jpg", baos);
 				is = new ByteArrayInputStream(baos.toByteArray());
 				
-				System.out.println("Saving Attachment");
+				System.out.println("Saving Attachment; Size of " + baos.size());
 				resp = db.saveAttachment(is, attachementName, "image/jpeg");
 				
 				if (resp.getError() != null) {
