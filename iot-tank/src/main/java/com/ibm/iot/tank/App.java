@@ -3,7 +3,6 @@ package com.ibm.iot.tank;
 import com.ibm.iot.camera.TankVision;
 import com.ibm.iot.comms.IoTManager;
 import com.ibm.iot.motor.MotorException;
-import com.ibm.iot.tank.controller.BasicTankController;
 import com.ibm.iot.tank.controller.IoTTankController;
 import com.ibm.iot.tank.controller.TankController;
 
