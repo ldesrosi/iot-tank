@@ -4,7 +4,6 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   <groupId>com.ibm.iot.tank</groupId>
   <artifactId>iot-tank</artifactId>
   <version>0.0.1</version>
-  <packaging>pom</packaging>
 
   <properties>
     <!-- maven-compiler-plugin configuration -->
@@ -64,7 +63,4 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
       </plugin>
     </plugins>
   </build>
-  <modules>
-  	<module>../JRPiCam</module>
-  </modules>
 </project>
