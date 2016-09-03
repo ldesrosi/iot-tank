@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -46,6 +47,8 @@ public class IoTManager implements CommandCallback, Runnable {
 	}
 		
 	public void init() throws IoTException {
+		eventQueue = new LinkedTransferQueue<Event>();
+		
 	    Properties options = new Properties();
 
 	    try {
@@ -98,10 +101,13 @@ public class IoTManager implements CommandCallback, Runnable {
 	@Override
 	public void run() {
 		while (active) {
-			Event event;
+			Event event = null;
 			try {
 				event = eventQueue.take();
-				client.publishEvent(event.topic, event.data);
+				
+				if (event != null) {
+					client.publishEvent(event.topic, event.data);
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
