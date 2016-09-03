@@ -31,7 +31,12 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 	  <groupId>com.cloudant</groupId>
 	  <artifactId>cloudant-client</artifactId>
 	  <version>2.5.1</version>
-	</dependency>     
+	</dependency>
+	<dependency>
+		<groupId>JRPiCam</groupId>
+		<artifactId>JRPiCam</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</dependency>
   </dependencies>
 
   <build>
