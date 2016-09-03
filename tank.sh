@@ -5,9 +5,8 @@ SCRIPT=$(readlink -f "$0")
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=$(dirname "$SCRIPT")
 
-cd $SCRIPTPATH/..
+cd $SCRIPTPATH/
 git pull git@github.com:ldesrosi/iot-tank.git
 
-cd iot-tank
 sudo env "PATH=$PATH" mvn package -DskipTests
 sudo env "PATH=$PATH" mvn exec:java -DskipTests -Dexec.mainClass="com.ibm.iot.tank.App" -Dexec.classpathScope=runtime 
