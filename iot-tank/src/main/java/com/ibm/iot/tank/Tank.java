@@ -70,6 +70,13 @@ public class Tank {
 		dispatchEvent(Direction.RIGHT);
 	}
 	
+	public void turnAround()  throws MotorException {
+		rightMotor.run(MotorCommandEnum.BACKWARD);
+		leftMotor.run(MotorCommandEnum.FORWARD);
+		Motor.delay(2*TURN_WAIT);
+		dispatchEvent(Direction.RIGHT);
+	}
+	
 	private void dispatchEvent(Direction direction) {
 		DirectionEvent event = new DirectionEvent();
 		event.timestamp = new Date();

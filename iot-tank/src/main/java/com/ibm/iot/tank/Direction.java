@@ -4,5 +4,6 @@ public enum Direction {
 	LEFT,
 	RIGHT,
 	FRONT,
-	BACK
+	BACK, 
+	TURN_AROUND
 }

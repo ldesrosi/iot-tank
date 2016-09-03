@@ -13,4 +13,4 @@ git pull git@github.com:ldesrosi/iot-tank-client.git
 sudo env "PATH=$PATH"  mvn install -DskipTests
 
 cd $SCRIPTPATH/iot-tank
-sudo env "PATH=$PATH" mvn exec:java -DskipTests -Dexec.mainClass="com.ibm.iot.tank.App" -Dexec.classpathScope=runtime 
+sudo env "PATH=$PATH" mvn exec:java -DskipTests -Dexec.mainClass="com.ibm.iot.tank.main.App" -Dexec.classpathScope=runtime 
