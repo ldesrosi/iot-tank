@@ -5,6 +5,9 @@ SCRIPT=$(readlink -f "$0")
 # Absolute path this script is in, thus /home/user/bin
 SCRIPTPATH=$(dirname "$SCRIPT")
 
+cd $SCRIPTPATH/../JRPiCam
+git pull git@github.com:ldesrosi/JRPiCam.git
+
 cd $SCRIPTPATH/
 git pull git@github.com:ldesrosi/iot-tank.git
 
