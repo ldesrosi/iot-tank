@@ -7,11 +7,11 @@ SCRIPTPATH=$(dirname "$SCRIPT")
 
 cd $SCRIPTPATH/../JRPiCam
 git pull git@github.com:ldesrosi/JRPiCam.git
-mvn install -DskipTests
+sudo mvn install -DskipTests
 
 cd $SCRIPTPATH/
 git pull git@github.com:ldesrosi/iot-tank-client.git
-mvn install -DskipTests
+sudo mvn install -DskipTests
 
 cd $SCRIPTPATH/iot-tank
 
