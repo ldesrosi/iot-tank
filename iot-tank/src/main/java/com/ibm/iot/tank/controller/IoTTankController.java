@@ -1,60 +1,89 @@
 package com.ibm.iot.tank.controller;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedTransferQueue;
+import java.text.DateFormat;
 
 import com.google.gson.JsonObject;
 import com.ibm.iot.camera.TankVision;
+import com.ibm.iot.camera.VisionException;
+import com.ibm.iot.comms.CommandListener;
 import com.ibm.iot.comms.IoTException;
 import com.ibm.iot.comms.IoTManager;
 import com.ibm.iot.motor.MotorException;
 import com.ibm.iot.sensor.RangeEvent;
+import com.ibm.iot.sensor.RangeSensor;
+import com.ibm.iot.tank.DirectionEvent;
 import com.ibm.iot.tank.Tank;
+import com.ibm.iot.tank.TankException;
 
-class Event {
-	public Event(String topic, JsonObject data) {
-		this.topic = topic;
-		this.data = data;
-	}
-	public String topic;
-	public JsonObject data;
-}
-
-public class IoTTankController implements TankController {
+public class IoTTankController implements TankController, CommandListener {
 	private Tank tank = null;
+	private RangeSensor rangeSensor = null;
+	private TankVision tankVision = null;
+	private IoTManager iotManager = null;
+	
 	private long sessionId = -1;
 	private boolean turning = false;
 	private RangeEvent lastSentEvent = null;
 
-	BlockingQueue<Event> eventQueue = null;
-	Thread iotEventProducer = null;
-	Thread tankVisionThread = null;
-
 	public IoTTankController(Tank tank) {
 		this.tank = tank;
-		eventQueue = new LinkedTransferQueue<Event>();
+	}
+	
+	public void init() throws TankException {
+		try {
+			this.tank.init();
+		} catch (MotorException e) {
+			throw new TankException("Error initializing Tank", e);
+		}
+		this.tank.addListener(this);
 		
-		iotEventProducer = new Thread(new Runnable() {		
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						Event event = eventQueue.take();
-						IoTManager.getManager().sendEvent(event.topic, event.data);
-					} catch (InterruptedException | IoTException e) {
-						e.printStackTrace();
-					}					
-				}
-			}
-		});
+		this.rangeSensor = new RangeSensor();
+		this.rangeSensor.addListener(this);
+		
+		this.tankVision = new TankVision();
+		try {
+			this.tankVision.init();
+		} catch (VisionException e) {
+			throw new TankException("Error initializing TankVision", e);
+		}
+		
+		try {
+			this.iotManager = IoTManager.getManager();
+		} catch (IoTException e) {
+			throw new TankException("Error initializing IoTManager", e);
+		}
+		this.iotManager.addListener(this);		
+	}
+	
+	public void activate() {
+		this.iotManager.activate();	
 	}
 
+	public void deactivate() {
+		this.iotManager.deactivate();
+		this.rangeSensor.deactivate();
+		this.tankVision.deactivate();		
+	}
+	
+	@Override
+	public void onDirectionChange(DirectionEvent event) {
+		JsonObject jsonEvent = new JsonObject();
+		jsonEvent.addProperty("sessionId", sessionId);
+		jsonEvent.addProperty("timestamp", DateFormat.getDateTimeInstance().format(event.timestamp));
+		jsonEvent.addProperty("direction", event.direction.name());
+		jsonEvent.addProperty("heading", event.heading.name());
+		
+		iotManager.sendEvent("directionChange", jsonEvent);
+
+		lastSentEvent = null; //We reset the range event
+		turning = false;
+	}
 	/**
 	 * Notification received at every distance update.
 	 */
 	@Override
 	public void onDistanceChange(RangeEvent event) {		
-		if (sessionId != -1 && !turning) {
+		if (!turning) {
 			if (lastSentEvent == null) {
 				// If this is the first distance event we send it
 				System.out.println("Sending first range report");
@@ -84,7 +113,7 @@ public class IoTTankController implements TankController {
 		jsonEvent.addProperty("distance", event.getDistance());
 		jsonEvent.addProperty("eventTime", event.getEventTime());
 
-		eventQueue.add(new Event("tankDistance", jsonEvent));
+		iotManager.sendEvent("tankDistance", jsonEvent);
 	}
 
 	/**
@@ -133,38 +162,5 @@ public class IoTTankController implements TankController {
 			e.printStackTrace();
 		}
 		
-	}
-
-	/**
-	 * Tank systems notification when a turn is completed
-	 */
-	@Override
-	public void processTurnComplete(String side) {
-		try {
-			
-			JsonObject jsonEvent = new JsonObject();
-			jsonEvent.addProperty("sessionId", sessionId);
-			jsonEvent.addProperty("turn", side);
-	
-			eventQueue.add(new Event("turnComplete", jsonEvent));
-		} finally {
-			lastSentEvent = null; //We reset the range event
-			turning = false;
-		}
-	}
-
-	/**
-	 * Commands are received from IoT. No-op for this method
-	 */
-	public void run() {
-		iotEventProducer.start();
-		
-		long id = System.currentTimeMillis();
-		
-		JsonObject jsonEvent = new JsonObject();
-		jsonEvent.addProperty("sessionId", id);
-
-		eventQueue.add(new Event("sessionStarted", jsonEvent));
-		sessionId = id;
 	}
 }

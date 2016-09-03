@@ -18,19 +18,18 @@ import com.hopding.jrpicam.enums.Encoding;
 import com.hopding.jrpicam.exceptions.FailedToRunRaspistillException;
 
 public class TankVision implements Runnable {
+	private static int SLEEP_DURATION = 2000;
+	private static int IMAGE_WIDTH = 100;
+	private static int IMAGE_HEIGTH = 100;
+	
 	private RPiCamera piCamera = null;
 	private CloudantClient dbClient = null;
 	private Database db = null;
 	
 	private long sessionId = 0;
-
-	public long getSessionId() {
-		return sessionId;
-	}
-
-	public void setSessionId(long sessionId) {
-		this.sessionId = sessionId;
-	}
+	private boolean active = true;
+	
+	private Thread executionThread = null;
 
 	public void init() throws VisionException {
 		try {
@@ -42,18 +41,37 @@ public class TankVision implements Runnable {
 			}
 		    
 			piCamera = new RPiCamera();
-			piCamera.setWidth(100);
-			piCamera.setHeight(100);
+			piCamera.setWidth(IMAGE_WIDTH);
+			piCamera.setHeight(IMAGE_HEIGTH);
 			piCamera.setEncoding(Encoding.JPG); // Change encoding of images to PNG
 
 			dbClient = ClientBuilder.account(prop.getProperty("account"))
-					.username(prop.getProperty("username")).password(prop.getProperty("password")).build();
+					.username(prop.getProperty("username"))
+					.password(prop.getProperty("password"))
+					.build();
 
 			db = dbClient.database(prop.getProperty("database"), false);
 			
 		} catch (FailedToRunRaspistillException e) {
 			throw new VisionException("Exception initializing the Pi Camera.", e);
 		}
+	}
+	
+	public void activate() {
+		executionThread = new Thread(this);
+		executionThread.start();
+	}
+	
+	public void deactivate() {
+		active = false;
+	}
+	
+	public long getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(long sessionId) {
+		this.sessionId = sessionId;
 	}
 
 	@Override
@@ -65,11 +83,9 @@ public class TankVision implements Runnable {
 		
 		String attachementName = "" + sessionId;
 		try {
-			while (true) {
-				System.out.println("Taking picture");
+			while (active) {
 				buffer = piCamera.takeBufferedStill();
 				
-				System.out.println("Converting to input stream");
 				baos = new ByteArrayOutputStream();
 				ImageIO.write(buffer, "jpg", baos);
 				is = new ByteArrayInputStream(baos.toByteArray());
@@ -81,7 +97,7 @@ public class TankVision implements Runnable {
 					throw new VisionException("Error occured saving attachment; Error is" + resp.getError() + ". Reason is: " + resp.getReason());
 				}
 				
-				Thread.sleep(2000);
+				Thread.sleep(SLEEP_DURATION);
 			}
 		} catch (InterruptedException | IOException | VisionException e) {
 			e.printStackTrace();

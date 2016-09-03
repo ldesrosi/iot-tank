@@ -1,20 +1,48 @@
 package com.ibm.iot.tank.controller;
 
-import com.google.gson.JsonObject;
-import com.ibm.iot.camera.TankVision;
 import com.ibm.iot.motor.MotorException;
 import com.ibm.iot.sensor.RangeEvent;
+import com.ibm.iot.sensor.RangeSensor;
+import com.ibm.iot.tank.DirectionEvent;
 import com.ibm.iot.tank.Tank;
 
 public class BasicTankController implements TankController {
 	private Tank tank = null;
+	private RangeSensor rangeSensor = null;
+
 	private boolean turnLeft = false;
-	
-    public BasicTankController(Tank tank) {
+
+	public BasicTankController(Tank tank) {
 		this.tank = tank;
 	}
-    
+	
+	public void init() {
+		this.tank.addListener(this);
+		
+		this.rangeSensor = new RangeSensor();
+		this.rangeSensor.addListener(this);
+	}
 
+	public void activate() {
+		rangeSensor.activate();
+		
+		try {
+			tank.forward();
+		} catch (MotorException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void deactivate() {
+		rangeSensor.deactivate();
+		
+		try {
+			tank.stop();
+		} catch (MotorException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Notification received at every distance update.
 	 */
@@ -23,7 +51,7 @@ public class BasicTankController implements TankController {
 		if (event.getDistance() < 5) {
 			System.out.println("Collision detected.  Changing course.");
 			turnLeft = !turnLeft;
-			try {			
+			try {
 				if (turnLeft)
 					tank.left();
 				else
@@ -33,35 +61,13 @@ public class BasicTankController implements TankController {
 			}
 		}
 	}
-	
-	/**
-	 * Process IoT Command - No-op since the basic controller is not connected to IoT.
-	 */
-	@Override
-	public void processCommand(String command, JsonObject payload) {
-		// No-op
-	}
 
-	/**
-	 * Tank systems notification when a turn is completed
-	 */
 	@Override
-	public void processTurnComplete(String side) {
+	public void onDirectionChange(DirectionEvent event) {
 		try {
 			tank.forward();
 		} catch (MotorException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/** 
-	 * Basic event loop to control tank.  Can be running on a separate thread.
-	 */
-	public void run() {
-		try {
-			tank.forward();
-		} catch (MotorException e) {
-			e.printStackTrace();
-		}		
 	}
 }

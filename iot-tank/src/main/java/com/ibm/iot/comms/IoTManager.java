@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.BlockingQueue;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -11,11 +12,28 @@ import com.ibm.iotf.client.device.Command;
 import com.ibm.iotf.client.device.CommandCallback;
 import com.ibm.iotf.client.device.DeviceClient;
 
-public class IoTManager implements CommandCallback {
+class Event {
+	public Event(String topic, JsonObject data) {
+		this.topic = topic;
+		this.data = data;
+	}
+	public String topic;
+	public JsonObject data;
+}
+
+public class IoTManager implements CommandCallback, Runnable {
 	private static IoTManager manager = null;
 	private DeviceClient client = null;
 	
 	private List<CommandListener> listeners = new LinkedList<CommandListener>();
+	private BlockingQueue<Event> eventQueue = null;
+	
+	private boolean active = true;
+	
+	private Thread executionThread = null;
+	
+	private IoTManager() {
+	}
 	
 	public static IoTManager getManager() throws IoTException {
 		if (manager == null) {
@@ -26,10 +44,7 @@ public class IoTManager implements CommandCallback {
 		}
 		return manager;
 	}
-	
-	private IoTManager() {
-	}
-	
+		
 	public void init() throws IoTException {
 	    Properties options = new Properties();
 
@@ -51,15 +66,23 @@ public class IoTManager implements CommandCallback {
 			throw new IoTException("Error connecting to the IoT Foundation", e);
 		}
 	}
-
-	public void sendEvent(String topic, JsonObject event) {
-		client.publishEvent(topic, event, 0); 
+	
+	public void activate() {
+		executionThread = new Thread(this);
+		executionThread.start();
+	}
+	
+	public void deactivate() {
+		active = false;
 	}
 
 	public void addListener(CommandListener listener) {
 		assert(listener != null);
-		
 		listeners.add(listener);
+	}
+	
+	public void sendEvent(String topic, JsonObject event) {
+		eventQueue.add(new Event(topic, event));
 	}
 	
 	@Override
@@ -71,7 +94,18 @@ public class IoTManager implements CommandCallback {
 			listener.processCommand(cmd.getCommand(), payload);
 		});
 	}
-	
-	
+
+	@Override
+	public void run() {
+		while (active) {
+			Event event;
+			try {
+				event = eventQueue.take();
+				client.publishEvent(event.topic, event.data);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}	
+	}
 }
 

@@ -20,6 +20,8 @@ public class RangeSensor implements Runnable {
 	private long endTime = 0;
 	
 	private List<RangeListener> listeners = new LinkedList<RangeListener>();
+	
+	private Thread executionThread = null;
 
 	static {
 		//Using BCM Pin mapping
@@ -36,6 +38,33 @@ public class RangeSensor implements Runnable {
 		Gpio.delay(2000);
 	}
 
+	public void activate() {
+		executionThread = new Thread(this);
+		executionThread.start();
+	}
+	
+	public void deactivate() {
+		active = false;
+	}
+	
+	public void addListener(RangeListener listener) {
+		assert(listener != null);
+		
+		listeners.add(listener);
+	}
+	
+	private void dispatchEvents(double lastDist, long lastDistTime, double dist, long distTime) {
+		RangeEvent event = new RangeEvent();
+		event.setDistance(dist);
+		event.setEventTime(distTime);
+		event.setLastDistance(lastDist);
+		event.setLastEventTime(lastDistTime);
+		
+		listeners.forEach(listener->{
+			listener.onDistanceChange(event);
+		});
+	}	
+	
 	@Override
 	public void run() {
 		System.out.println("Range Sensor Activated");
@@ -68,35 +97,4 @@ public class RangeSensor implements Runnable {
 			}
 		}
 	}
-
-	public void addListener(RangeListener listener) {
-		assert(listener != null);
-		
-		listeners.add(listener);
-	}
-	
-	private void dispatchEvents(double lastDist, long lastDistTime, double dist, long distTime) {
-		RangeEvent event = new RangeEvent();
-		event.setDistance(dist);
-		event.setEventTime(distTime);
-		event.setLastDistance(lastDist);
-		event.setLastEventTime(lastDistTime);
-		
-		listeners.forEach(listener->{
-			listener.onDistanceChange(event);
-		});
-	}
-
-	public double getDistance() {
-		return distance;
-	}
-
-	public void activate() {
-		active = true;
-	}
-
-	public void deactivate() {
-		active = false;
-	}
-
 }

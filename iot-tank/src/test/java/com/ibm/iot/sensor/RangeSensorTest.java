@@ -23,9 +23,6 @@ public class RangeSensorTest extends TestCase {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Final Distance: " + sensor.getDistance());
-		
 		assertFalse(thread.isAlive());
-		assertFalse(sensor.getDistance() == 0);
 	}
 }
