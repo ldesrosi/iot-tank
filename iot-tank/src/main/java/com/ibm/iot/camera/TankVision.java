@@ -26,9 +26,7 @@ public class TankVision implements Runnable {
 	private CloudantClient dbClient = null;
 	private Database db = null;
 	
-	private long sessionId = 0;
 	private boolean active = true;
-	private int imageCounter = 0;
 	
 	private Thread executionThread = null;
 
@@ -67,14 +65,6 @@ public class TankVision implements Runnable {
 	public void deactivate() {
 		active = false;
 	}
-	
-	public long getSessionId() {
-		return sessionId;
-	}
-
-	public void setSessionId(long sessionId) {
-		this.sessionId = sessionId;
-	}
 
 	@Override
 	public void run() {
@@ -89,17 +79,15 @@ public class TankVision implements Runnable {
 		try {
 			
 			while (active) {
-				
-				String attachementName = Long.toString(sessionId) + "-" + (++imageCounter);
-				
 				buffer = piCamera.takeBufferedStill();
 				
 				baos = new ByteArrayOutputStream();
 				ImageIO.write(buffer, "jpg", baos);
 				is = new ByteArrayInputStream(baos.toByteArray());
 				
-				System.out.println("Saving Attachment " + attachementName + "; Size of " + baos.size());
-				resp = db.saveAttachment(is, attachementName, "image/jpeg");
+				resp = db.post(null);
+				System.out.println("Saving Attachment of size " + baos.size());
+				resp = db.saveAttachment(is, "image.jpg", "image/jpeg", resp.getId(), resp.getRev());
 				
 				if (resp.getError() != null) {
 					throw new VisionException("Error occured saving attachment; Error is" + resp.getError() + ". Reason is: " + resp.getReason());
