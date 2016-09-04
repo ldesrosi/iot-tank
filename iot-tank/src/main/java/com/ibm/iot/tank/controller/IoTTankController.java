@@ -175,6 +175,7 @@ public class IoTTankController implements TankController, CommandListener {
 					}
 				}
 			}
+			filteredList.clear();
 			return selectedEvent;
 		}
 	}
