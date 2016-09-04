@@ -1,5 +1,6 @@
 package com.ibm.iot.tank.Strategy;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,12 +43,14 @@ public class TankStrategy {
 	
 	public void init(String strategy) {
 		System.out.println("About to parse:" + strategy);
-		StepList list = new Gson().fromJson(strategy, StepList.class);
+		Step[] list = new Gson().fromJson(strategy, Step[].class);
+
+		System.out.println("Strategy has " + list.length + " steps");
 		
-		if (list.getSteps().size() > 1)
-			currentStep = list.getSteps().get(0);
+		if (list.length > 1)
+			currentStep = list[0];
 		
-		list.getSteps().forEach(step->{
+		Arrays.stream(list).forEach(step->{
 			stepMap.put(new Integer(step.getId()), step);
 		});
 		
@@ -75,6 +78,8 @@ public class TankStrategy {
 	}
 	
 	public TankCommand getCurrentCommand() {
+		assert(currentStep != null);
+		
 		TankCommand command = new TankCommand();
 		
 		if (previousStep == null) {
