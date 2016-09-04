@@ -64,7 +64,6 @@ public class TankVision implements Runnable {
 	}
 	
 	public void deactivate() {
-		System.out.println("Deactivate called");
 		active = false;
 	}
 	
@@ -92,18 +91,15 @@ public class TankVision implements Runnable {
 				
 				String attachementName = Long.toString(sessionId) + "-" + (++imageCounter);
 				
-				System.out.println("Taking picture");
 				buffer = piCamera.takeBufferedStill();
-				System.out.println("Done taking picture");
 				
 				baos = new ByteArrayOutputStream();
 				ImageIO.write(buffer, "jpg", baos);
 				is = new ByteArrayInputStream(baos.toByteArray());
 				
-				System.out.println("Saving Attachment; Size of " + baos.size());
+				System.out.println("Saving Attachment " + attachementName + "; Size of " + baos.size());
 				resp = db.saveAttachment(is, attachementName, "image/jpeg");
 				
-				System.out.println("Done saving picture");
 				if (resp.getError() != null) {
 					throw new VisionException("Error occured saving attachment; Error is" + resp.getError() + ". Reason is: " + resp.getReason());
 				}
