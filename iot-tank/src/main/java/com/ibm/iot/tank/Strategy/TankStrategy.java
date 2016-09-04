@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.ibm.iot.sensor.RangeEvent;
 import com.ibm.iot.tank.Direction;
 import com.ibm.iot.tank.controller.TankCommand;

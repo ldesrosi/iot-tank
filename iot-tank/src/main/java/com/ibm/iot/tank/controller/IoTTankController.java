@@ -3,7 +3,6 @@ package com.ibm.iot.tank.controller;
 import java.text.DateFormat;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.ibm.iot.camera.TankVision;
 import com.ibm.iot.camera.VisionException;
 import com.ibm.iot.comms.CommandListener;
@@ -222,8 +221,8 @@ public class IoTTankController implements TankController, CommandListener {
 		
 		this.rangeSensor.activate();
 		
-		this.tankVision.setSessionId(sessionId);
-		this.tankVision.activate();
+		//this.tankVision.setSessionId(sessionId);
+		//this.tankVision.activate();
 		
 		processStrategyCommand(strategy.getCurrentCommand());
 	}
