@@ -88,41 +88,46 @@ public class IoTTankController implements TankController, CommandListener {
 	@Override
 	public void onDirectionChange(DirectionEvent event) {
 		System.out.println("Direction Change event received");
+		String heading = "NORTH";
+		
 		if (initialDirection == null) {
 			initialDirection = event;
 		} else {
-			double distanceCovered = 0.0;
-			if (initialRange != null && lastSentRangeEvent != null) {
-				distanceCovered = initialRange.getDistance() - lastSentRangeEvent.getDistance();
-			}
-			
-			JsonObject jsonEvent = new JsonObject();
-			jsonEvent.addProperty("class", "DirectionEvent");
-			jsonEvent.addProperty("sessionId", sessionId);
-			jsonEvent.addProperty("timestamp", DateFormat.getDateTimeInstance().format(event.timestamp));
-			jsonEvent.addProperty("direction", event.direction.name());
-			jsonEvent.addProperty("heading", event.heading.name());
-			jsonEvent.addProperty("previousHeading", initialDirection.heading.name());
-			jsonEvent.addProperty("distanceCovered", distanceCovered);
-			
-			
-			iotManager.sendEvent("directionChange", jsonEvent);
-	
-			//We go forward now...
-			try {
-				System.out.println("Going forward now.");
-				tank.forward();
-			} catch(MotorException e) {
-				System.err.println("Error going forward after a turn.");
-				e.printStackTrace();
-			}
-			
-			//We reset all state variables
-			initialDirection = event;
-			initialRange = null;
-			lastSentRangeEvent = null; 
-			turning = false;
+			heading = initialDirection.heading.name();
 		}
+		
+		double distanceCovered = 0.0;
+		if (initialRange != null && lastSentRangeEvent != null) {
+			distanceCovered = initialRange.getDistance() - lastSentRangeEvent.getDistance();
+		}
+		
+		JsonObject jsonEvent = new JsonObject();
+		jsonEvent.addProperty("class", "DirectionEvent");
+		jsonEvent.addProperty("sessionId", sessionId);
+		jsonEvent.addProperty("timestamp", DateFormat.getDateTimeInstance().format(event.timestamp));
+		jsonEvent.addProperty("direction", event.direction.name());
+		jsonEvent.addProperty("heading", event.heading.name());
+		jsonEvent.addProperty("previousHeading", heading);
+		jsonEvent.addProperty("distanceCovered", distanceCovered);
+		
+		
+		iotManager.sendEvent("directionChange", jsonEvent);
+
+		//We go forward now...
+		try {
+			System.out.println("Going forward now.");
+			tank.forward();
+		} catch(MotorException e) {
+			System.err.println("Error going forward after a turn.");
+			e.printStackTrace();
+		}
+		
+		//We reset all state variables
+		initialDirection = event;
+		initialRange = null;
+		lastSentRangeEvent = null; 
+		turning = false;
+		
 	}
 	/**
 	 * Notification received at every distance update.

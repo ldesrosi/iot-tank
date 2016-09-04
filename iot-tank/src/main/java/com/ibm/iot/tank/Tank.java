@@ -35,7 +35,7 @@ public class Tank {
 	
 	public void setSpeed(int speed) throws MotorException {
 		leftMotor.setSpeed(speed);
-		rightMotor.setSpeed(speed);
+		rightMotor.setSpeed(Math.round(speed*0.9f));
 	}
 	
 	public void forward() throws MotorException {
