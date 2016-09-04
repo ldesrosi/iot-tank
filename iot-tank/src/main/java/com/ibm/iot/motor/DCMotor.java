@@ -43,12 +43,12 @@ public class DCMotor extends Motor {
 	public void run(MotorCommandEnum command) throws MotorException {
 		switch (command) {
 		case FORWARD:
-			setPin(in1Pin, 0);
-			setPin(in2Pin, 1);
-			break;
-		case BACKWARD:
 			setPin(in2Pin, 0);
 			setPin(in1Pin, 1);
+			break;
+		case BACKWARD:
+			setPin(in1Pin, 0);
+			setPin(in2Pin, 1);
 			break;
 		case RELEASE:
 			setPin(in1Pin, 0);

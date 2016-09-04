@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 public class DCMotorTest extends TestCase {
 
 	public void testMotor1() {
-		runMotorTest(0);
+		runMotorTest(1);
 	}
 	
 	public void testMotor4() {
