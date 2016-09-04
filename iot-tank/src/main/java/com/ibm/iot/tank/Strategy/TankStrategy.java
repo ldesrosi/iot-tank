@@ -55,16 +55,16 @@ public class TankStrategy {
 		
 	}
 	public TankCommand getNextCommand(RangeEvent initialRange, RangeEvent event) {
-		//Does this step care about the distance done?
-		if (currentStep.getDistance() == -1) return null;
-		
 		//Is this a collision?
 		if (event.getDistance() < COLLISION_DISTANCE) {
 			System.out.println("Collision distance:" + event.getDistance());
 			
-			previousStep = currentStep;
-			currentStep = stepMap.get(currentStep.getCollisionStep());
-			return getCurrentCommand();
+			return getNextStep(true);
+		} 
+		
+		//Does this step care about the distance done?
+		if (currentStep.getDistance() == -1) {
+			return null;
 		} else {
 			double distanceAchieved = initialRange.getDistance() - event.getDistance();
 			
@@ -74,12 +74,26 @@ public class TankStrategy {
 			if (distanceAchieved >= currentStep.getDistance()) {
 				System.out.println("Distance achieved:" + distanceAchieved);
 				
-				previousStep = currentStep;
-				currentStep = stepMap.get(currentStep.getNextStep());
-				return getCurrentCommand();
+				return getNextStep(false);
 			} else {
 				return null;
 			}
+		}
+	}
+	private TankCommand getNextStep(boolean collision) {
+		int stepId = (collision)?currentStep.getCollisionStep():currentStep.getNextStep();
+		
+		//If the id is 0 or smaller we are done
+		if (stepId <= 0) {
+			TankCommand lastCommand = new TankCommand();
+			lastCommand.setDirection(Direction.FRONT);
+			lastCommand.setSpeed(0);
+			
+			return lastCommand;
+		} else {
+			previousStep = currentStep;
+			currentStep = stepMap.get(stepId);
+			return getCurrentCommand();
 		}
 	}
 	

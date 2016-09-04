@@ -68,33 +68,37 @@ public class RangeSensor implements Runnable {
 	@Override
 	public void run() {
 		System.out.println("Range Sensor Activated:" + active);
-		while (active) {
-			double lastDistance = distance;
-			long lastDistanceTime = endTime;
-			
-			Gpio.digitalWrite(TRIGGER_PIN, 1);
-			Gpio.delayMicroseconds(TRIG_DURATION_IN_MICROS);
-			Gpio.digitalWrite(TRIGGER_PIN, 0);
-			
-			while (Gpio.digitalRead(ECHO_PIN) == 0) {
-				startTime = System.nanoTime();
+		try {
+			while (active) {
+				double lastDistance = distance;
+				long lastDistanceTime = endTime;
+				
+				Gpio.digitalWrite(TRIGGER_PIN, 1);
+				Gpio.delayMicroseconds(TRIG_DURATION_IN_MICROS);
+				Gpio.digitalWrite(TRIGGER_PIN, 0);
+				
+				while (Gpio.digitalRead(ECHO_PIN) == 0) {
+					startTime = System.nanoTime();
+				}
+				
+				while (Gpio.digitalRead(ECHO_PIN) == 1) {
+					endTime = System.nanoTime();
+				}
+	
+				long duration = (long) Math.ceil((endTime - startTime) / 1000.0); 
+	
+				distance = duration * SOUND_SPEED / (2 * 10000);
+				
+				dispatchEvents(lastDistance, lastDistanceTime, distance, endTime);
+				
+				try {
+					Thread.sleep(WAIT_DURATION_IN_MILLIS);
+				} catch (InterruptedException ex) {
+					System.err.println("Interrupt during trigger");
+				}
 			}
-			
-			while (Gpio.digitalRead(ECHO_PIN) == 1) {
-				endTime = System.nanoTime();
-			}
-
-			long duration = (long) Math.ceil((endTime - startTime) / 1000.0); 
-
-			distance = duration * SOUND_SPEED / (2 * 10000);
-			
-			dispatchEvents(lastDistance, lastDistanceTime, distance, endTime);
-			
-			try {
-				Thread.sleep(WAIT_DURATION_IN_MILLIS);
-			} catch (InterruptedException ex) {
-				System.err.println("Interrupt during trigger");
-			}
+		} finally {
+			System.out.println("Range Sensor Deactivated:" + active);
 		}
 	}
 }
