@@ -87,6 +87,7 @@ public class IoTTankController implements TankController, CommandListener {
 	
 	@Override
 	public void onDirectionChange(DirectionEvent event) {
+		System.out.println("Direction Change event received");
 		if (initialDirection == null) {
 			initialDirection = event;
 		} else {
@@ -109,6 +110,7 @@ public class IoTTankController implements TankController, CommandListener {
 	
 			//We go forward now...
 			try {
+				System.out.println("Going forward now.");
 				tank.forward();
 			} catch(MotorException e) {
 				System.err.println("Error going forward after a turn.");

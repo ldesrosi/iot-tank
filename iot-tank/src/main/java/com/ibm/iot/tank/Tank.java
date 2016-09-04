@@ -83,6 +83,8 @@ public class Tank {
 		event.direction = direction;
 		event.heading = computeNewHeading(direction);
 		
+		System.out.println("Notifying " +listeners.size() + " that the turn is complete");
+		
 		listeners.forEach(listener->{			
 			listener.onDirectionChange(event);
 		});
