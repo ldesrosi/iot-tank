@@ -265,8 +265,8 @@ public class IoTTankController implements TankController, CommandListener {
 		
 		this.rangeSensor.activate();
 		
-		//this.tankVision.setSessionId(sessionId);
-		//this.tankVision.activate();
+		this.tankVision.setSessionId(sessionId);
+		this.tankVision.activate();
 		
 		if(!strategy.isDone()) {
 			processStrategyCommand(strategy.getCurrentCommand());
