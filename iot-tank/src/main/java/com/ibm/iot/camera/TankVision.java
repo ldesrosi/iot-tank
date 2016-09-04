@@ -68,6 +68,7 @@ public class TankVision implements Runnable {
 	}
 	
 	public void deactivate() {
+		System.out.println("Deactivate called");
 		active = false;
 	}
 	
