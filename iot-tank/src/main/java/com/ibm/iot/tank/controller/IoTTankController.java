@@ -144,7 +144,7 @@ public class IoTTankController implements TankController, CommandListener {
 		jsonEvent.addProperty("distance", event.getDistance());
 		jsonEvent.addProperty("eventTime", event.getEventTime());
 
-		iotManager.sendEvent("tankDistance", jsonEvent);
+		iotManager.sendEvent("distanceChange", jsonEvent);
 	}
 
 	/**
