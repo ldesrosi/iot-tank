@@ -27,7 +27,7 @@ public class IoTTankController implements TankController, CommandListener {
 	private DirectionEvent initialDirection = null;
 	private RangeEvent initialRange = null;
 
-	private RangeEvent lastRangeEvent = null;
+	private RangeEvent lastSentRangeEvent = null;
 	private boolean turning = false;
 	
 	private TankStrategy strategy = null;
@@ -87,8 +87,8 @@ public class IoTTankController implements TankController, CommandListener {
 			initialDirection = event;
 		} else {
 			double distanceCovered = 0.0;
-			if (initialRange != null && lastRangeEvent != null) {
-				distanceCovered = initialRange.getDistance() - lastRangeEvent.getDistance();
+			if (initialRange != null && lastSentRangeEvent != null) {
+				distanceCovered = initialRange.getDistance() - lastSentRangeEvent.getDistance();
 			}
 			
 			JsonObject jsonEvent = new JsonObject();
@@ -106,7 +106,7 @@ public class IoTTankController implements TankController, CommandListener {
 			//We reset all state variables
 			initialDirection = event;
 			initialRange = null;
-			lastRangeEvent = null; //We reset the range event
+			lastSentRangeEvent = null; //We reset the range event
 			turning = false;
 		}
 	}
@@ -117,15 +117,16 @@ public class IoTTankController implements TankController, CommandListener {
 	public void onDistanceChange(RangeEvent event) {
 		if (initialRange == null) {
 			initialRange = event;
+			return;
 		}
 		
 		if (!turning) {
-			if (lastRangeEvent == null) {
+			if (lastSentRangeEvent == null) {
 				// If this is the first distance event we send it
 				System.out.println("Sending first range report");
 				sendRangeEvent(event);
 			} else {
-				double progress = lastRangeEvent.getDistance() - event.getDistance();
+				double progress = lastSentRangeEvent.getDistance() - event.getDistance();
 				if (progress > 5) {
 					sendRangeEvent(event);
 				}
@@ -138,7 +139,7 @@ public class IoTTankController implements TankController, CommandListener {
 	}
 
 	private void sendRangeEvent(RangeEvent event) {
-		lastRangeEvent = event;
+		lastSentRangeEvent = event;
 		
 		JsonObject jsonEvent = new JsonObject();
 		jsonEvent.addProperty("class", "RangeEvent");
