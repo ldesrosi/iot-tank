@@ -17,6 +17,7 @@ import com.ibm.iot.tank.TankException;
 import com.ibm.iot.tank.Strategy.TankStrategy;
 
 public class IoTTankController implements TankController, CommandListener {
+	private static final double THRESHOLD = 10;
 	private Tank tank = null;
 	private RangeSensor rangeSensor = null;
 	private TankVision tankVision = null;
@@ -115,6 +116,13 @@ public class IoTTankController implements TankController, CommandListener {
 	 */
 	@Override
 	public void onDistanceChange(RangeEvent event) {
+		// We filter out spike in distance...
+		double delta = event.getLastDistance() - event.getDistance();
+		if (delta < THRESHOLD) {
+			System.out.println("Ignoring spike in distance:" + delta);
+			return;
+		}
+		
 		if (initialRange == null) {
 			initialRange = event;
 			return;

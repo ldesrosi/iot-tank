@@ -12,6 +12,7 @@ public class RangeSensor implements Runnable {
 
 	private final static int TRIGGER_PIN = 23;
 	private final static int ECHO_PIN = 24;
+	private static final double THRESHOLD = 10;
 
 	private boolean active = false;
 	private double distance = -1;
@@ -92,6 +93,7 @@ public class RangeSensor implements Runnable {
 	
 				distance = duration * SOUND_SPEED / (2 * 10000);
 				System.out.println("Distance=" + distance);
+				
 				dispatchEvents(lastDistance, lastDistanceTime, distance, endTime);
 				
 				try {
