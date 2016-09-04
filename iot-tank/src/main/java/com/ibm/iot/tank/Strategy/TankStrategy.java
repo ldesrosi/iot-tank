@@ -55,6 +55,8 @@ public class TankStrategy {
 			stepMap.put(new Integer(step.getId()), step);
 		});
 		
+		done = false;
+		
 	}
 	public TankCommand getNextCommand(RangeEvent initialRange, RangeEvent event) {
 		//Is this a collision?
@@ -100,7 +102,6 @@ public class TankStrategy {
 	}
 	
 	public TankCommand getCurrentCommand() {
-		assert(currentStep != null);
 		
 		TankCommand command = new TankCommand();
 		
