@@ -59,8 +59,11 @@ public class TankVision implements Runnable {
 	}
 	
 	public void activate() {
-		executionThread = new Thread(this);
-		executionThread.start();
+		if (executionThread == null || !active) {
+			active = true;
+			executionThread = new Thread(this);
+			executionThread.start();
+		}
 	}
 	
 	public void deactivate() {
