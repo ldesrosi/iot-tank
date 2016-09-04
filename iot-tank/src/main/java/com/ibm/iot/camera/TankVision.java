@@ -44,6 +44,7 @@ public class TankVision implements Runnable {
 			piCamera = new RPiCamera();
 			piCamera.setWidth(IMAGE_WIDTH);
 			piCamera.setHeight(IMAGE_HEIGTH);
+			piCamera.setHorizontalFlipOn();
 			piCamera.setEncoding(Encoding.JPG); // Change encoding of images to PNG
 
 			dbClient = ClientBuilder.account(prop.getProperty("account"))

@@ -93,6 +93,7 @@ public class IoTTankController implements TankController, CommandListener {
 			}
 			
 			JsonObject jsonEvent = new JsonObject();
+			jsonEvent.addProperty("class", "DirectionEvent");
 			jsonEvent.addProperty("sessionId", sessionId);
 			jsonEvent.addProperty("timestamp", DateFormat.getDateTimeInstance().format(event.timestamp));
 			jsonEvent.addProperty("direction", event.direction.name());
@@ -139,6 +140,7 @@ public class IoTTankController implements TankController, CommandListener {
 		lastRangeEvent = event;
 		
 		JsonObject jsonEvent = new JsonObject();
+		jsonEvent.addProperty("class", "RangeEvent");
 		jsonEvent.addProperty("sessionId", sessionId);
 		jsonEvent.addProperty("lastDistance", event.getLastDistance());
 		jsonEvent.addProperty("lastTime", event.getLastEventTime());
@@ -201,8 +203,11 @@ public class IoTTankController implements TankController, CommandListener {
 				tank.backward();
 				break;
 			}
-			
-			tank.setSpeed(command.getSpeed());
+			if (command.getSpeed() == 0) {
+				tank.stop();
+			} else {
+				tank.setSpeed(command.getSpeed());
+			}
 		} catch(MotorException e) {
 			System.err.println("Could not process command; received motor exception");
 			e.printStackTrace();
