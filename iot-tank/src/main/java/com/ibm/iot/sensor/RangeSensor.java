@@ -13,7 +13,7 @@ public class RangeSensor implements Runnable {
 	private final static int TRIGGER_PIN = 23;
 	private final static int ECHO_PIN = 24;
 
-	private boolean active = true;
+	private boolean active = false;
 	private double distance = -1;
 
 	private long startTime = 0;
@@ -39,8 +39,11 @@ public class RangeSensor implements Runnable {
 	}
 
 	public void activate() {
-		executionThread = new Thread(this);
-		executionThread.start();
+		if (executionThread == null || !active) {
+			active = true;
+			executionThread = new Thread(this);
+			executionThread.start();
+		}
 	}
 	
 	public void deactivate() {

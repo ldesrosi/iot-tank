@@ -131,7 +131,9 @@ public class IoTTankController implements TankController, CommandListener {
 				}
 			}
 			
-			processStrategyCommand(strategy.getNextCommand(initialRange, event));
+			if (!strategy.isDone()) {
+				processStrategyCommand(strategy.getNextCommand(initialRange, event));
+			}
 		}
 	}
 
@@ -224,7 +226,9 @@ public class IoTTankController implements TankController, CommandListener {
 		//this.tankVision.setSessionId(sessionId);
 		//this.tankVision.activate();
 		
-		processStrategyCommand(strategy.getCurrentCommand());
+		if(!strategy.isDone()) {
+			processStrategyCommand(strategy.getCurrentCommand());
+		}
 	}
 	
 	private void stopSession() throws MotorException {

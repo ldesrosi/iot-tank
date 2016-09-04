@@ -14,6 +14,8 @@ public class TankStrategy {
 	private static final double COLLISION_DISTANCE = 5;
 	private Step previousStep = null;
 	private Step currentStep = null;
+	private boolean done = false;
+	
 	private Map<Integer, Step> stepMap = new HashMap<Integer, Step>();
 	
 	private static Map<String, Direction> directionMap = new HashMap<String, Direction>();
@@ -68,9 +70,6 @@ public class TankStrategy {
 		} else {
 			double distanceAchieved = initialRange.getDistance() - event.getDistance();
 			
-			System.out.println("Distance achieved:" + distanceAchieved);
-			System.out.println("Current objective:" + currentStep.getDistance());
-			
 			if (distanceAchieved >= currentStep.getDistance()) {
 				System.out.println("Distance achieved:" + distanceAchieved);
 				
@@ -80,6 +79,7 @@ public class TankStrategy {
 			}
 		}
 	}
+	
 	private TankCommand getNextStep(boolean collision) {
 		int stepId = (collision)?currentStep.getCollisionStep():currentStep.getNextStep();
 		
@@ -89,6 +89,7 @@ public class TankStrategy {
 			lastCommand.setDirection(Direction.FRONT);
 			lastCommand.setSpeed(0);
 			
+			done = true;
 			return lastCommand;
 		} else {
 			previousStep = currentStep;
@@ -113,5 +114,9 @@ public class TankStrategy {
 		command.setSpeed(currentStep.getSpeed());
 		
 		return command;
+	}
+	
+	public boolean isDone() {
+		return done;
 	}
 }
