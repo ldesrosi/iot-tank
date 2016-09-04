@@ -80,21 +80,33 @@ public class TankVision implements Runnable {
 			
 			while (active) {
 				buffer = piCamera.takeBufferedStill();
-				
-				baos = new ByteArrayOutputStream();
-				ImageIO.write(buffer, "jpg", baos);
-				is = new ByteArrayInputStream(baos.toByteArray());
-				
-				TankImage image = new TankImage();
-				resp = db.post(image);
-				System.out.println("Saving Attachment of size " + baos.size());
-				resp = db.saveAttachment(is, "image.jpg", "image/jpeg", resp.getId(), resp.getRev());
-				
-				if (resp.getError() != null) {
-					throw new VisionException("Error occured saving attachment; Error is" + resp.getError() + ". Reason is: " + resp.getReason());
+
+				if (buffer != null) {
+					baos = new ByteArrayOutputStream();
+					ImageIO.write(buffer, "jpg", baos);
+					is = new ByteArrayInputStream(baos.toByteArray());
+					
+					TankImage image = new TankImage();
+					resp = db.post(image);
+					System.out.println("Saving Attachment of size " + baos.size());
+					resp = db.saveAttachment(is, "image.jpg", "image/jpeg", resp.getId(), resp.getRev());
+					
+					if (resp.getError() != null) {
+						throw new VisionException("Error occured saving attachment; Error is" + resp.getError() + ". Reason is: " + resp.getReason());
+					}
+					
+					try {
+						if (is != null) is.close();
+						if (baos != null) baos.close();
+					} catch (IOException e) {
+						System.err.println("Error closing streams in TankVision");
+						e.printStackTrace();
+					}
+					
+					Thread.sleep(SLEEP_DURATION);
+				} else {
+					System.err.println("Received an empty buffer from the Pi Camera");
 				}
-				
-				Thread.sleep(SLEEP_DURATION);
 			}
 		} catch (InterruptedException | IOException | VisionException e) {
 			e.printStackTrace();

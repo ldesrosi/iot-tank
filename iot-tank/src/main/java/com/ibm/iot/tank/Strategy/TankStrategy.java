@@ -48,6 +48,7 @@ public class TankStrategy {
 
 		System.out.println("Strategy has " + list.length + " steps");
 		
+		previousStep = null;
 		if (list.length >= 1)
 			currentStep = list[0];
 		
@@ -55,6 +56,7 @@ public class TankStrategy {
 			stepMap.put(new Integer(step.getId()), step);
 		});
 		
+
 		done = false;
 	}
 	
