@@ -210,8 +210,7 @@ public class IoTTankController implements TankController, CommandListener {
 		sessionId = payload.get("sessionId").getAsLong();
 		
 		String strStrategy = payload.get("strategy").getAsString();
-		JsonObject jsonStrategy = new JsonParser().parse(strStrategy).getAsJsonObject();
-		strategy.init(jsonStrategy);
+		strategy.init(strStrategy);
 		
 		this.rangeSensor.activate();
 		this.tankVision.activate();

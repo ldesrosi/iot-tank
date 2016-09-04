@@ -40,9 +40,9 @@ public class TankStrategy {
 		directionMap.put("WEST-SOUTH", Direction.LEFT);
 	}
 	
-	public void init(JsonObject strategy) {
+	public void init(String strategy) {
 		System.out.println("About to parse:" + strategy);
-		StepList list = new Gson().fromJson(strategy.toString(), StepList.class);
+		StepList list = new Gson().fromJson(strategy, StepList.class);
 		
 		if (list.getSteps().size() > 1)
 			currentStep = list.getSteps().get(0);
