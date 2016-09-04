@@ -13,6 +13,7 @@ public class App {
 			@Override
 			public void run() {
 				try {
+					System.out.println("Calling deactivate before terminating VM");
 					controller.deactivate();
 					Thread.sleep(2000);
 				} catch (InterruptedException e) {

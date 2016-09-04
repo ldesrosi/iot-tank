@@ -69,6 +69,7 @@ public class IoTTankController implements TankController, CommandListener {
 	}
 
 	public void deactivate() {
+		System.out.println("deactive called on IoT Tank");
 		try {
 			tank.stop();
 		} catch (MotorException e) {
