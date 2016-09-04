@@ -56,8 +56,12 @@ public class TankStrategy {
 		});
 		
 		done = false;
-		
 	}
+	
+	public boolean isDone() {
+		return done;
+	}
+	
 	public TankCommand getNextCommand(RangeEvent initialRange, RangeEvent event) {
 		//Is this a collision?
 		if (event.getDistance() < COLLISION_DISTANCE) {
@@ -71,6 +75,7 @@ public class TankStrategy {
 			System.out.println("Not a direction enabled step");
 			return null;
 		} else {
+			System.out.println("Initial Rnage:" + initialRange.getDistance() + " Current Range:" + event.getDistance());
 			double distanceAchieved = initialRange.getDistance() - event.getDistance();
 			
 			if (distanceAchieved >= currentStep.getDistance()) {
@@ -84,10 +89,10 @@ public class TankStrategy {
 	}
 	
 	private TankCommand getNextStep(boolean collision) {
-		int stepId = (collision)?currentStep.getCollisionStep():currentStep.getNextStep();
+		int nextStepId = (collision)?currentStep.getCollisionStep():currentStep.getNextStep();
 		
 		//If the id is 0 or smaller we are done
-		if (stepId <= 0) {
+		if (nextStepId <= 0) {
 			TankCommand lastCommand = new TankCommand();
 			lastCommand.setDirection(Direction.FRONT);
 			lastCommand.setSpeed(0);
@@ -96,29 +101,22 @@ public class TankStrategy {
 			return lastCommand;
 		} else {
 			previousStep = currentStep;
-			currentStep = stepMap.get(stepId);
+			currentStep = stepMap.get(nextStepId);
 			return getCurrentCommand();
 		}
 	}
 	
 	public TankCommand getCurrentCommand() {
-		
 		TankCommand command = new TankCommand();
 		
 		if (previousStep == null) {
 			command.setDirection(Direction.FRONT);
 		} else {
 			String directionKey = previousStep.getHeading() + "-" + currentStep.getHeading();
-			
 			command.setDirection(directionMap.get(directionKey));
 		}
-		
 		command.setSpeed(currentStep.getSpeed());
 		
 		return command;
-	}
-	
-	public boolean isDone() {
-		return done;
 	}
 }

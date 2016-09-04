@@ -107,7 +107,7 @@ public class IoTTankController implements TankController, CommandListener {
 			//We reset all state variables
 			initialDirection = event;
 			initialRange = null;
-			lastSentRangeEvent = null; //We reset the range event
+			lastSentRangeEvent = null; 
 			turning = false;
 		}
 	}
@@ -115,20 +115,20 @@ public class IoTTankController implements TankController, CommandListener {
 	 * Notification received at every distance update.
 	 */
 	@Override
-	public void onDistanceChange(RangeEvent event) {
-		// We filter out spike in distance...
-		double delta = event.getLastDistance() - event.getDistance();
-		if (delta > THRESHOLD) {
-			System.out.println("Ignoring spike in distance:" + delta);
-			return;
-		}
-		
-		if (initialRange == null) {
-			initialRange = event;
-			return;
-		}
-		
+	public void onDistanceChange(RangeEvent event) {		
 		if (!turning) {
+			// We filter out spike in distance...
+			double delta = event.getLastDistance() - event.getDistance();
+			if (delta > THRESHOLD) {
+				System.out.println("Ignoring spike in distance:" + delta);
+				return;
+			}
+			
+			if (initialRange == null) {
+				initialRange = event;
+				return;
+			}
+			
 			if (lastSentRangeEvent == null) {
 				// If this is the first distance event we send it
 				System.out.println("Sending first range report");
