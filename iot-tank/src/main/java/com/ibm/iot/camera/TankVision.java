@@ -18,9 +18,9 @@ import com.hopding.jrpicam.enums.Encoding;
 import com.hopding.jrpicam.exceptions.FailedToRunRaspistillException;
 
 public class TankVision implements Runnable {
-	private static int SLEEP_DURATION = 2000;
-	private static int IMAGE_WIDTH = 100;
-	private static int IMAGE_HEIGTH = 100;
+	private static int SLEEP_DURATION = 3000;
+	private static int IMAGE_WIDTH = 300;
+	private static int IMAGE_HEIGTH = 300;
 	
 	private RPiCamera piCamera = null;
 	private CloudantClient dbClient = null;
@@ -43,6 +43,7 @@ public class TankVision implements Runnable {
 			piCamera.setWidth(IMAGE_WIDTH);
 			piCamera.setHeight(IMAGE_HEIGTH);
 			piCamera.setHorizontalFlipOn();
+			piCamera.setVerticalFlipOn();
 			piCamera.setEncoding(Encoding.JPG); // Change encoding of images to PNG
 
 			dbClient = ClientBuilder.account(prop.getProperty("account"))
@@ -75,7 +76,6 @@ public class TankVision implements Runnable {
 		InputStream is = null;
 		Response resp = null;
 		
-		
 		try {
 			
 			while (active) {
@@ -98,6 +98,15 @@ public class TankVision implements Runnable {
 			}
 		} catch (InterruptedException | IOException | VisionException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				buffer.flush();
+				is.close();
+				baos.close();
+			} catch (IOException e) {
+				System.err.println("Error closing streams in TankVision");
+				e.printStackTrace();
+			}
 		}
 	}
 
