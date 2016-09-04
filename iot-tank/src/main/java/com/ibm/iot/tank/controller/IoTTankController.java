@@ -177,6 +177,8 @@ public class IoTTankController implements TankController, CommandListener {
 		if (command == null) return;
 		if (command.getDirection() == null) return;
 		
+		System.out.println("Command=" + command.getDirection());
+		System.out.println("Speed=" + command.getSpeed());
 		try{
 			switch(command.getDirection()) {
 			case FRONT:
