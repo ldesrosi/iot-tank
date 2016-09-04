@@ -41,6 +41,7 @@ public class TankStrategy {
 	}
 	
 	public void init(JsonObject strategy) {
+		System.out.println("About to parse:" + strategy);
 		StepList list = new Gson().fromJson(strategy.toString(), StepList.class);
 		
 		if (list.getSteps().size() > 1)
