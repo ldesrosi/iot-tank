@@ -71,6 +71,7 @@ public class IoTManager implements CommandCallback, Runnable {
 	}
 	
 	public void activate() {
+		System.out.println("IoTManager activated");
 		executionThread = new Thread(this);
 		executionThread.start();
 	}
