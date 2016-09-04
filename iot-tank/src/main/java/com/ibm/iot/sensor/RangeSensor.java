@@ -67,7 +67,7 @@ public class RangeSensor implements Runnable {
 	
 	@Override
 	public void run() {
-		System.out.println("Range Sensor Activated");
+		System.out.println("Range Sensor Activated:" + active);
 		while (active) {
 			double lastDistance = distance;
 			long lastDistanceTime = endTime;
