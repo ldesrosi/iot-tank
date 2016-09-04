@@ -48,7 +48,7 @@ public class TankStrategy {
 
 		System.out.println("Strategy has " + list.length + " steps");
 		
-		if (list.length > 1)
+		if (list.length >= 1)
 			currentStep = list[0];
 		
 		Arrays.stream(list).forEach(step->{
