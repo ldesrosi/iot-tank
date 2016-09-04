@@ -75,7 +75,6 @@ public class TankStrategy {
 			System.out.println("Not a direction enabled step");
 			return null;
 		} else {
-			System.out.println("Initial Rnage:" + initialRange.getDistance() + " Current Range:" + event.getDistance());
 			double distanceAchieved = initialRange.getDistance() - event.getDistance();
 			
 			if (distanceAchieved >= currentStep.getDistance()) {
