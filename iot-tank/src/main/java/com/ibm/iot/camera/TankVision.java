@@ -100,9 +100,8 @@ public class TankVision implements Runnable {
 			e.printStackTrace();
 		} finally {
 			try {
-				buffer.flush();
-				is.close();
-				baos.close();
+				if (is != null) is.close();
+				if (baos != null) baos.close();
 			} catch (IOException e) {
 				System.err.println("Error closing streams in TankVision");
 				e.printStackTrace();
