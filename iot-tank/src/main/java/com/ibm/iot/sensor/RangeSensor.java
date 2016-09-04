@@ -88,6 +88,7 @@ public class RangeSensor implements Runnable {
 
 			distance = duration * SOUND_SPEED / (2 * 10000);
 			
+			System.out.println("Distance=" + distance);
 			dispatchEvents(lastDistance, lastDistanceTime, distance, endTime);
 			
 			try {
