@@ -31,10 +31,6 @@ public class TankVision implements Runnable {
 	private int imageCounter = 0;
 	
 	private Thread executionThread = null;
-	
-	public TankVision() {
-		active = true;
-	}
 
 	public void init() throws VisionException {
 		try {
