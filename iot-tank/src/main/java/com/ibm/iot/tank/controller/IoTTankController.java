@@ -1,6 +1,8 @@
 package com.ibm.iot.tank.controller;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.ibm.iot.camera.TankVision;
@@ -27,6 +29,7 @@ public class IoTTankController implements TankController, CommandListener {
 	
 	private DirectionEvent initialDirection = null;
 	private RangeEvent initialRange = null;
+	private List<RangeEvent> filteredList = new ArrayList<RangeEvent>();
 
 	private RangeEvent lastSentRangeEvent = null;
 	private boolean turning = false;
@@ -104,6 +107,14 @@ public class IoTTankController implements TankController, CommandListener {
 			
 			iotManager.sendEvent("directionChange", jsonEvent);
 	
+			//We go forward now...
+			try {
+				tank.forward();
+			} catch(MotorException e) {
+				System.err.println("Error going forward after a turn.");
+				e.printStackTrace();
+			}
+			
 			//We reset all state variables
 			initialDirection = event;
 			initialRange = null;
@@ -125,10 +136,11 @@ public class IoTTankController implements TankController, CommandListener {
 			}
 			
 			if (initialRange == null) {
-				initialRange = event;
+				initialRange = filterEvent(event);
 				return;
 			}
 			
+			//Determining if we send an event to OpenWhisk
 			if (lastSentRangeEvent == null) {
 				// If this is the first distance event we send it
 				System.out.println("Sending first range report");
@@ -143,6 +155,27 @@ public class IoTTankController implements TankController, CommandListener {
 			if (!strategy.isDone()) {
 				processStrategyCommand(strategy.getNextCommand(initialRange, event));
 			}
+		}
+	}
+
+	private RangeEvent filterEvent(RangeEvent event) {
+		if (filteredList.size() < 5) {
+			filteredList.add(event);
+			return null;
+		} else {
+			double average = filteredList.stream().mapToDouble(e->{return e.getDistance(); }).average().orElse(0.0);
+			RangeEvent selectedEvent = null;
+			for (RangeEvent rangeEvent : filteredList) {
+				if (selectedEvent == null) {
+					selectedEvent = rangeEvent;
+				} else {
+					if (Math.abs(rangeEvent.getDistance() - average) < 
+							Math.abs(selectedEvent.getDistance() - average)) {
+						selectedEvent = rangeEvent;
+					}
+				}
+			}
+			return selectedEvent;
 		}
 	}
 

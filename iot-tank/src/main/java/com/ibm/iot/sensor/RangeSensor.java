@@ -12,7 +12,6 @@ public class RangeSensor implements Runnable {
 
 	private final static int TRIGGER_PIN = 23;
 	private final static int ECHO_PIN = 24;
-	private static final double THRESHOLD = 10;
 
 	private boolean active = false;
 	private double distance = -1;
