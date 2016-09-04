@@ -85,7 +85,8 @@ public class TankVision implements Runnable {
 				ImageIO.write(buffer, "jpg", baos);
 				is = new ByteArrayInputStream(baos.toByteArray());
 				
-				resp = db.post(null);
+				TankImage image = new TankImage();
+				resp = db.post(image);
 				System.out.println("Saving Attachment of size " + baos.size());
 				resp = db.saveAttachment(is, "image.jpg", "image/jpeg", resp.getId(), resp.getRev());
 				
