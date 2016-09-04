@@ -118,7 +118,7 @@ public class IoTTankController implements TankController, CommandListener {
 	public void onDistanceChange(RangeEvent event) {
 		// We filter out spike in distance...
 		double delta = event.getLastDistance() - event.getDistance();
-		if (delta < THRESHOLD) {
+		if (delta > THRESHOLD) {
 			System.out.println("Ignoring spike in distance:" + delta);
 			return;
 		}
