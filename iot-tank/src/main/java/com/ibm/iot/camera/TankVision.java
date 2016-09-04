@@ -28,6 +28,7 @@ public class TankVision implements Runnable {
 	
 	private long sessionId = 0;
 	private boolean active = true;
+	private int imageCounter = 0;
 	
 	private Thread executionThread = null;
 
@@ -76,12 +77,14 @@ public class TankVision implements Runnable {
 
 	@Override
 	public void run() {
+		System.out.println("Tank Vision Activated");
+		
 		BufferedImage buffer = null;
 		ByteArrayOutputStream baos = null;
 		InputStream is = null;
 		Response resp = null;
 		
-		String attachementName = "" + sessionId;
+		String attachementName = Long.toString(sessionId) + "-" + (++imageCounter);
 		try {
 			while (active) {
 				buffer = piCamera.takeBufferedStill();
