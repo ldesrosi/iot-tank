@@ -36,6 +36,8 @@ public class RangeSensor implements Runnable {
 		
 		Gpio.digitalWrite(TRIGGER_PIN, 0);
 		Gpio.delay(2000);
+		
+		active = true;
 	}
 
 	public void activate() {
