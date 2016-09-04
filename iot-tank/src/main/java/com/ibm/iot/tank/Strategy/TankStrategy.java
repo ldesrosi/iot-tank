@@ -61,13 +61,20 @@ public class TankStrategy {
 		
 		//Is this a collision?
 		if (event.getDistance() < COLLISION_DISTANCE) {
+			System.out.println("Collision distance:" + event.getDistance());
+			
 			previousStep = currentStep;
 			currentStep = stepMap.get(currentStep.getCollisionStep());
 			return getCurrentCommand();
 		} else {
 			double distanceAchieved = initialRange.getDistance() - event.getDistance();
 			
+			System.out.println("Distance achieved:" + distanceAchieved);
+			System.out.println("Current objective:" + currentStep.getDistance());
+			
 			if (distanceAchieved >= currentStep.getDistance()) {
+				System.out.println("Distance achieved:" + distanceAchieved);
+				
 				previousStep = currentStep;
 				currentStep = stepMap.get(currentStep.getNextStep());
 				return getCurrentCommand();
