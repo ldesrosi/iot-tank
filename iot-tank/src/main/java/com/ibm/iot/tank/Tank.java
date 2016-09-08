@@ -12,7 +12,7 @@ import com.ibm.iot.motor.MotorException;
 public class Tank {	
 	public static int LEFT_MOTOR = 1;
 	public static int RIGHT_MOTOR = 3;
-	private static long TURN_WAIT = 1000;
+	private static long TURN_WAIT = 1500;
 	private static int SPEED = 100;
 	
 	private DCMotor leftMotor = null;
