@@ -16,7 +16,7 @@ import com.ibm.iot.sensor.RangeSensor;
 import com.ibm.iot.tank.DirectionEvent;
 import com.ibm.iot.tank.Tank;
 import com.ibm.iot.tank.TankException;
-import com.ibm.iot.tank.Strategy.TankStrategy;
+import com.ibm.iot.tank.strategy.TankStrategy;
 
 public class IoTTankController implements TankController, CommandListener {
 	private static final double THRESHOLD = 10;
@@ -271,6 +271,8 @@ public class IoTTankController implements TankController, CommandListener {
 		String strStrategy = payload.get("strategy").getAsString();
 		strategy.init(strStrategy);
 		
+		this.tankVision.setSessionId(sessionId);
+		
 		this.rangeSensor.activate();
 		this.tankVision.activate();
 		
@@ -284,8 +286,12 @@ public class IoTTankController implements TankController, CommandListener {
 	}
 	
 	private void stopSession() throws MotorException {
-		tank.stop();
+		tank.stop();		
 		this.rangeSensor.deactivate();
 		this.tankVision.deactivate();
+		
+		sessionId = 0;
+		this.tankVision.setSessionId(sessionId);
+
 	}
 }

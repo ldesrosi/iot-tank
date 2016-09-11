@@ -1,4 +1,4 @@
-package com.ibm.iot.tank.Strategy;
+package com.ibm.iot.tank.strategy;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -11,7 +11,7 @@ import com.ibm.iot.tank.controller.TankCommand;
 
 public class TankStrategy {
 
-	private static final double COLLISION_DISTANCE = 5;
+	private static final double COLLISION_DISTANCE = 7;
 	private Step previousStep = null;
 	private Step currentStep = null;
 	private boolean done = false;

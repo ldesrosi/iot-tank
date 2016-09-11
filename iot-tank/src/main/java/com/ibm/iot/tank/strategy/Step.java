@@ -1,4 +1,4 @@
-package com.ibm.iot.tank.Strategy;
+package com.ibm.iot.tank.strategy;
 
 public class Step {
 	private int id = -1;

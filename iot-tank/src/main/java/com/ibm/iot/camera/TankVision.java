@@ -29,6 +29,8 @@ public class TankVision implements Runnable {
 	private boolean active = true;
 	
 	private Thread executionThread = null;
+	
+	private long sessionId = 0;
 
 	public void init() throws VisionException {
 		try {
@@ -90,6 +92,7 @@ public class TankVision implements Runnable {
 					is = new ByteArrayInputStream(baos.toByteArray());
 					
 					TankImage image = new TankImage();
+					image.setSessionId(getSessionId());
 					resp = db.post(image);
 					System.out.println("Saving Attachment of size " + baos.size());
 					resp = db.saveAttachment(is, "image.jpg", "image/jpeg", resp.getId(), resp.getRev());
@@ -122,6 +125,14 @@ public class TankVision implements Runnable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public long getSessionId() {
+		return sessionId;
+	}
+
+	public void setSessionId(long sessionId) {
+		this.sessionId = sessionId;
 	}
 
 }
