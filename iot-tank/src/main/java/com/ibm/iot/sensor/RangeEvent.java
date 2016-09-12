@@ -1,11 +1,16 @@
 package com.ibm.iot.sensor;
 
+import java.util.Date;
+
 public class RangeEvent {
+	private Date timestamp = new Date();
+	
 	private long lastEventTime;
 	private double lastDistance;
 
 	private long eventTime;
 	private double distance;
+	
 	public long getLastEventTime() {
 		return lastEventTime;
 	}
@@ -29,6 +34,12 @@ public class RangeEvent {
 	}
 	public void setDistance(double distance) {
 		this.distance = distance;
+	}
+	public Date getTimestamp() {
+		return timestamp;
+	}
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

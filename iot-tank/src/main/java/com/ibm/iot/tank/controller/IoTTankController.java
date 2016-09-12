@@ -102,15 +102,14 @@ public class IoTTankController implements TankController, CommandListener {
 		}
 		
 		JsonObject jsonEvent = new JsonObject();
-		jsonEvent.addProperty("class", "DirectionEvent");
+		jsonEvent.addProperty("type", "direction");
 		jsonEvent.addProperty("sessionId", sessionId);
 		jsonEvent.addProperty("timestamp", DateFormat.getDateTimeInstance().format(event.timestamp));
 		jsonEvent.addProperty("direction", event.direction.name());
 		jsonEvent.addProperty("heading", event.heading.name());
 		jsonEvent.addProperty("previousHeading", heading);
 		jsonEvent.addProperty("distanceCovered", distanceCovered);
-		
-		
+				
 		iotManager.sendEvent("directionChange", jsonEvent);
 
 		//We go forward now...
@@ -191,10 +190,11 @@ public class IoTTankController implements TankController, CommandListener {
 		lastSentRangeEvent = event;
 		
 		JsonObject jsonEvent = new JsonObject();
-		jsonEvent.addProperty("class", "RangeEvent");
+		jsonEvent.addProperty("type", "range");
 		jsonEvent.addProperty("sessionId", sessionId);
+		jsonEvent.addProperty("timestamp", DateFormat.getDateTimeInstance().format(event.getTimestamp()));
 		jsonEvent.addProperty("lastDistance", event.getLastDistance());
-		jsonEvent.addProperty("lastTime", event.getLastEventTime());
+		jsonEvent.addProperty("lastEventTime", event.getLastEventTime());
 		jsonEvent.addProperty("distance", event.getDistance());
 		jsonEvent.addProperty("eventTime", event.getEventTime());
 
