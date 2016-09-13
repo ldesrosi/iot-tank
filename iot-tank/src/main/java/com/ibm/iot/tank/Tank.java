@@ -14,7 +14,7 @@ public class Tank {
 	public static int RIGHT_MOTOR = 3;
 	private static float LEFT_COMPENSATION = 1.0f;
 	private static float RIGHT_COMPENSATION = 0.9f;
-	private static long TURN_WAIT = 2000;
+	private static long TURN_WAIT = 1700;
 	private static int SPEED = 100;
 	
 	private DCMotor leftMotor = null;
