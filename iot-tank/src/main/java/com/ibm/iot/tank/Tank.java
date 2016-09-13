@@ -12,6 +12,8 @@ import com.ibm.iot.motor.MotorException;
 public class Tank {	
 	public static int LEFT_MOTOR = 1;
 	public static int RIGHT_MOTOR = 3;
+	private static float LEFT_COMPENSATION = 1.0f;
+	private static float RIGHT_COMPENSATION = 0.9f;
 	private static long TURN_WAIT = 1500;
 	private static int SPEED = 100;
 	
@@ -34,8 +36,8 @@ public class Tank {
 	}
 	
 	public void setSpeed(int speed) throws MotorException {
-		leftMotor.setSpeed(speed);
-		rightMotor.setSpeed(Math.round(speed*0.9f));
+		leftMotor.setSpeed(Math.round(speed * LEFT_COMPENSATION));
+		rightMotor.setSpeed(Math.round(speed * RIGHT_COMPENSATION));
 	}
 	
 	public void forward() throws MotorException {
