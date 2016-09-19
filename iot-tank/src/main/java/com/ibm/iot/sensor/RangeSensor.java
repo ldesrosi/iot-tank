@@ -42,6 +42,7 @@ public class RangeSensor implements Runnable {
 		if (executionThread == null || !active) {
 			active = true;
 			executionThread = new Thread(this);
+			executionThread.setPriority(Thread.MAX_PRIORITY);
 			executionThread.start();
 		}
 	}
@@ -96,6 +97,7 @@ public class RangeSensor implements Runnable {
 				dispatchEvents(lastDistance, lastDistanceTime, distance, endTime);
 				
 				try {
+					Thread.yield();
 					Thread.sleep(WAIT_DURATION_IN_MILLIS);
 				} catch (InterruptedException ex) {
 					System.err.println("Interrupt during trigger");
